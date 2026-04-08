@@ -1,1 +1,222 @@
-<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>濾心更換提醒</title><script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:sans-serif;background:#f0f7ff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}.card{background:white;border-radius:20px;padding:32px 24px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,.08)}.hd{text-align:center;margin-bottom:28px}.hd .ic{font-size:48px}.hd h1{font-size:22px;font-weight:700;color:#1a1a2e;margin-top:8px}.hd p{font-size:14px;color:#888;margin-top:4px}label{display:block;font-size:14px;font-weight:600;color:#444;margin-bottom:6px;margin-top:16px}select,input{width:100%;padding:12px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:15px;color:#333;outline:none;background:#fafafa}.hint{font-size:12px;color:#aaa;margin-top:5px}.btn{width:100%;margin-top:28px;padding:14px;background:linear-gradient(135deg,#2196F3,#1565C0);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer}.btn:disabled{background:#ccc}.ok{display:none;text-align:center;padding:20px}#ld{text-align:center;padding:40px;color:#888}</style></head><body><div class="card">  <div id="ld">⏳ 正在連線 LINE...</div>  <div id="fm" style="display:none">    <div class="hd">      <div class="ic">💧</div>      <h1>濾心更換提醒</h1>      <p>設定後，LINE 會在到期前通知您</p>    </div>    <label>選擇濾心型號</label>    <select id="prod">      <option value="30">MAXTRA+ （每 4 週更換）</option>      <option value="90">MAXTRA PRO （每 3 個月）</option>      <option value="180">ON TAP 龍頭式 （每 6 個月）</option>    </select>    <p class="hint">不確定型號？請參考包裝盒說明</p>    <label>上次更換濾心的日期</label>    <input type="date" id="dt">    <p class="hint">全新濾心請選今天</p>    <button class="btn" id="btn" onclick="go()">✅ 設定提醒</button>  </div>  <div class="ok" id="ok">    <div style="font-size:60px">🎉</div>    <h2 style="font-size:20px;color:#2e7d32;margin-top:12px">提醒設定成功！</h2>    <p id="msg" style="font-size:14px;color:#666;margin-top:8px">我們會在到期前 3 天透過 LINE 通知您。</p>  </div></div><script>const LIFF_ID="2009728428-SfuyDoV1";const BACKEND="https://line-reminder-backend.onrender.com";let uid="";(async()=>{  try{    await liff.init({liffId:LIFF_ID});    if(!liff.isLoggedIn()){liff.login();return;}    const p=await liff.getProfile();    uid=p.userId;    document.getElementById("dt").value=new Date().toISOString().split("T")[0];    document.getElementById("ld").style.display="none";    document.getElementById("fm").style.display="block";  }catch(e){    document.getElementById("ld").innerHTML="❌ 初始化失敗："+e.message;  }})();async function go(){  const prod=document.getElementById("prod").value;  const last=document.getElementById("dt").value;  if(!last){alert("請選日期！");return;}  const d=new Date(last);  d.setDate(d.getDate()+parseInt(prod));  const next=d.toISOString().split("T")[0];  const btn=document.getElementById("btn");  btn.disabled=true;btn.textContent="⏳ 儲存中...";  try{    const r=await fetch(BACKEND+"/api/reminder",{      method:"POST",      headers:{"Content-Type":"application/json"},      body:JSON.stringify({userId:uid,nextDate:next,productDays:parseInt(prod)})    });    if(!r.ok)throw new Error("伺服器錯誤");    document.getElementById("fm").style.display="none";    document.getElementById("ok").style.display="block";    document.getElementById("msg").textContent="下次到期日："+next+"，我們會提前 3 天通知您。";  }catch(e){    alert("儲存失敗："+e.message);    btn.disabled=false;btn.textContent="✅ 設定提醒";  }}</script></body></html>
+<!DOCTYPE html>
+<html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>三菱可菱水 服務中心</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans TC',sans-serif;background:#e8f4f8;min-height:100vh;padding:16px}
+.card{background:white;border-radius:16px;padding:24px 20px;max-width:420px;margin:0 auto 16px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.logo{text-align:center;margin-bottom:20px}
+.logo img{height:48px;object-fit:contain}
+.logo h1{font-size:17px;font-weight:700;color:#003366;margin-top:8px}
+.logo p{font-size:12px;color:#888;margin-top:3px}
+.tabs{display:flex;gap:8px;margin-bottom:20px}
+.tab-btn{flex:1;padding:10px 4px;border:2px solid #d0dce6;border-radius:10px;font-size:13px;font-weight:600;color:#666;background:white;cursor:pointer;transition:all .2s}
+.tab-btn.active{border-color:#1976D2;background:#1976D2;color:white}
+.section{display:none}.section.show{display:block}
+label{display:block;font-size:13px;font-weight:600;color:#444;margin:14px 0 5px}
+select,input{width:100%;padding:11px 13px;border:1.5px solid #ddd;border-radius:9px;font-size:14px;color:#333;background:#fafafa;outline:none}
+select:focus,input:focus{border-color:#1976D2}
+.hint{font-size:11px;color:#aaa;margin-top:4px}
+.btn{width:100%;margin-top:20px;padding:13px;background:#1976D2;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer}
+.btn:disabled{background:#bbb;cursor:not-allowed}
+.btn.green{background:#2e7d32}
+.ok{text-align:center;padding:24px 12px}
+.ok .ic{font-size:52px;margin-bottom:12px}
+.ok h2{font-size:18px;font-weight:700;color:#1976D2;margin-bottom:8px}
+.ok p{font-size:13px;color:#555;line-height:1.6}
+.ok .sub{margin-top:12px;font-size:12px;color:#aaa}
+.info-box{background:#f0f7ff;border-radius:10px;padding:14px;font-size:13px;color:#333;line-height:1.7;margin-top:16px}
+.info-box b{color:#1976D2}
+#ld{text-align:center;padding:60px 20px;color:#888}
+.store-list{margin-top:12px}
+.store-item{background:#f8f8f8;border-radius:8px;padding:12px 14px;margin-bottom:8px;font-size:13px}
+.store-item b{display:block;color:#003366;margin-bottom:3px}
+.store-item span{color:#555}
+</style></head>
+<body>
+<div id="ld">⏳ 正在連線 LINE...</div>
+<div id="app" style="display:none">
+
+<!-- Logo -->
+<div class="card">
+  <div class="logo">
+    <h1>🔵 三菱可菱水 Cleansui</h1>
+    <p>官方會員服務中心</p>
+  </div>
+  <!-- 分頁 Tab -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('reminder')">💧 濾心提醒</button>
+    <button class="tab-btn" onclick="showTab('register')">📋 產品登錄</button>
+    <button class="tab-btn" onclick="showTab('store')">📍 購買據點</button>
+  </div>
+
+  <!-- ===== Tab1: 濾心提醒 ===== -->
+  <div id="tab-reminder" class="section show">
+    <div id="reminder-form">
+      <label>選擇濾心 / 產品型號</label>
+      <select id="product" onchange="updateHint()">
+        <optgroup label="━ 龍頭型淨水器 ━">
+          <option value="90|龍頭型（EFC11）">EFC11 — 龍頭型（每3個月）</option>
+          <option value="90|龍頭型（EFC21）">EFC21 — 龍頭型（每3個月）</option>
+          <option value="90|龍頭型（CGC4EW）">CGC4EW — 龍頭型（每3個月）</option>
+          <option value="90|龍頭型（CBC03E）">CBC03E — 龍頭型（每3個月）</option>
+        </optgroup>
+        <optgroup label="━ 廚下型淨水器 ━">
+          <option value="365|廚下型（EUC2000）">EUC2000 — 廚下型（每12個月）</option>
+          <option value="365|廚下型（UZC2000）">UZC2000 — 廚下型（每12個月）</option>
+        </optgroup>
+        <optgroup label="━ 檯面型淨水器 ━">
+          <option value="365|檯面型（ET201）">ET201 — 檯面型（每12個月）</option>
+        </optgroup>
+        <optgroup label="━ 淨水壺 ━">
+          <option value="90|淨水壺濾心">淨水壺濾心（每3個月）</option>
+        </optgroup>
+        <optgroup label="━ 除氯沐浴器 ━">
+          <option value="60|ESC21W（除氯沐浴器）">ESC21W — 除氯沐浴器（每2個月）</option>
+          <option value="120|ESC11（除氯沐浴器）">ESC11 — 除氯沐浴器（每4個月）</option>
+          <option value="30|ESC31Z（除氯沐浴器）">ESC31Z — 除氯沐浴器（每1個月）</option>
+        </optgroup>
+      </select>
+      <div id="prod-hint" class="hint"></div>
+      <label>上次更換 / 安裝日期</label>
+      <input type="date" id="lastDate">
+      <p class="hint">全新安裝請選今天</p>
+      <button class="btn" id="r-btn" onclick="setReminder()">✅ 設定更換提醒</button>
+    </div>
+    <div id="reminder-ok" class="ok" style="display:none">
+      <div class="ic">🎉</div>
+      <h2>提醒設定成功！</h2>
+      <p id="r-msg"></p>
+      <p class="sub">到期前3天及當天將透過 LINE 通知您</p>
+    </div>
+  </div>
+
+  <!-- ===== Tab2: 產品登錄 ===== -->
+  <div id="tab-register" class="section">
+    <div id="register-form">
+      <label>產品名稱</label>
+      <input type="text" id="reg-name" placeholder="例：廚下型淨水器">
+      <label>產品型號</label>
+      <input type="text" id="reg-code" placeholder="例：EUC2000">
+      <label>購買日期</label>
+      <input type="date" id="reg-date">
+      <label>購買地點</label>
+      <input type="text" id="reg-place" placeholder="例：MOMO購物、特力屋、官方門市">
+      <div class="info-box">ℹ️ 產品保固期為購買日起 <b>1年</b>，登錄後系統將自動在保固到期前提醒您。</div>
+      <button class="btn green" id="reg-btn" onclick="doRegister()">📋 完成產品登錄</button>
+    </div>
+    <div id="register-ok" class="ok" style="display:none">
+      <div class="ic">✅</div>
+      <h2>登錄成功！</h2>
+      <p id="reg-msg"></p>
+      <p class="sub">保固到期前30天及7天將透過 LINE 提醒您</p>
+    </div>
+  </div>
+
+  <!-- ===== Tab3: 購買據點 ===== -->
+  <div id="tab-store" class="section">
+    <div class="info-box" style="margin-top:0;margin-bottom:12px">
+      📞 客服專線：<b>02-2756-5899</b><br>
+      ✉️ 信箱：cleansui.tw@gmail.com<br>
+      🕐 週一～週五 09:00-18:00
+    </div>
+    <div class="store-list">
+      <div class="store-item"><b>🏪 官方門市（台北）</b><span>台北市松山區光復北路85巷11號</span></div>
+      <div class="store-item"><b>🛒 線上購買</b><span>MOMO購物網、PChome、蝦皮商城</span></div>
+      <div class="store-item"><b>🏬 實體通路</b><span>特力屋、家樂福、愛買</span></div>
+      <div class="store-item"><b>📦 官方網站</b><span>www.cleansui-home.com.tw</span></div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+const LIFF_ID="2009728428-SfuyDoV1";
+const BACKEND="https://line-reminder-backend.onrender.com";
+let uid="";
+
+// Tab 切換
+function showTab(t){
+  ['reminder','register','store'].forEach(n=>{
+    document.getElementById('tab-'+n).classList.toggle('show',n===t);
+  });
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active',['reminder','register','store'][i]===t);
+  });
+}
+
+// 選型號後顯示提示
+const hints={
+  '90':'更換週期：每 3 個月',
+  '365':'更換週期：每 12 個月',
+  '60':'更換週期：每 2 個月',
+  '120':'更換週期：每 4 個月',
+  '30':'更換週期：每 1 個月',
+};
+function updateHint(){
+  const val=document.getElementById('product').value.split('|')[0];
+  document.getElementById('prod-hint').textContent=hints[val]||'';
+}
+
+// LIFF 初始化
+(async()=>{
+  try{
+    await liff.init({liffId:LIFF_ID});
+    if(!liff.isLoggedIn()){liff.login();return;}
+    const p=await liff.getProfile();
+    uid=p.userId;
+    document.getElementById('lastDate').value=new Date().toISOString().split('T')[0];
+    document.getElementById('reg-date').value=new Date().toISOString().split('T')[0];
+    document.getElementById('ld').style.display='none';
+    document.getElementById('app').style.display='block';
+    updateHint();
+  }catch(e){
+    document.getElementById('ld').innerHTML='❌ 初始化失敗：'+e.message;
+  }
+})();
+
+// 設定濾心提醒
+async function setReminder(){
+  const selVal=document.getElementById('product').value.split('|');
+  const days=parseInt(selVal[0]),name=selVal[1];
+  const last=document.getElementById('lastDate').value;
+  if(!last){alert('請選擇日期！');return;}
+  const d=new Date(last);d.setDate(d.getDate()+days);
+  const next=d.toISOString().split('T')[0];
+  const btn=document.getElementById('r-btn');
+  btn.disabled=true;btn.textContent='⏳ 儲存中...';
+  try{
+    const r=await fetch(BACKEND+'/api/reminder',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:uid,nextDate:next,productDays:days,productName:name})});
+    if(!r.ok)throw new Error('錯誤');
+    document.getElementById('reminder-form').style.display='none';
+    document.getElementById('reminder-ok').style.display='block';
+    document.getElementById('r-msg').textContent='濾心型號：'+name+'\n下次更換日：'+next;
+  }catch(e){
+    alert('設定失敗：'+e.message);
+    btn.disabled=false;btn.textContent='✅ 設定更換提醒';
+  }
+}
+
+// 產品登錄
+async function doRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const code=document.getElementById('reg-code').value.trim();
+  const date=document.getElementById('reg-date').value;
+  const place=document.getElementById('reg-place').value.trim();
+  if(!name||!code||!date||!place){alert('請填寫所有欄位！');return;}
+  const btn=document.getElementById('reg-btn');
+  btn.disabled=true;btn.textContent='⏳ 登錄中...';
+  try{
+    const r=await fetch(BACKEND+'/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:uid,productName:name,productCode:code,purchaseDate:date,purchasePlace:place})});
+    const data=await r.json();
+    if(!r.ok)throw new Error('錯誤');
+    document.getElementById('register-form').style.display='none';
+    document.getElementById('register-ok').style.display='block';
+    document.getElementById('reg-msg').textContent='產品：'+name+'（'+code+'）\n購買地點：'+place+'\n保固到期：'+data.warrantyEnd;
+  }catch(e){
+    alert('登錄失敗：'+e.message);
+    btn.disabled=false;btn.textContent='📋 完成產品登錄';
+  }
+}
+</script>
+</body></html>

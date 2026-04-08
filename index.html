@@ -23,22 +23,23 @@ select:focus,input:focus{border-color:#1976D2}
 .ok{text-align:center;padding:24px 12px}
 .ok .ic{font-size:52px;margin-bottom:12px}
 .ok h2{font-size:18px;font-weight:700;color:#1976D2;margin-bottom:8px}
-.ok p{font-size:13px;color:#555;line-height:1.8;white-space:pre-line}
+.ok p{font-size:13px;color:#555;line-height:1.7;white-space:pre-line}
 .ok .sub{margin-top:12px;font-size:12px;color:#aaa}
 .info-box{background:#f0f7ff;border-radius:10px;padding:14px;font-size:13px;color:#333;line-height:1.7;margin-top:16px}
 .info-box b{color:#1976D2}
 #ld{text-align:center;padding:60px 20px;color:#888}
-.store-section{margin-bottom:14px}
-.store-section-title{font-size:12px;font-weight:700;color:#888;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase}
-.store-item{background:#f8f8f8;border-radius:8px;padding:11px 13px;margin-bottom:6px;font-size:13px}
-.store-item b{display:block;color:#003366;margin-bottom:3px;font-size:13px}
-.store-item span{color:#555;line-height:1.6}
-.store-item a{color:#1976D2;text-decoration:none;font-weight:600}
-.divider{height:1px;background:#eee;margin:14px 0}
+.store-group{margin-bottom:16px}
+.store-group-title{font-size:12px;font-weight:700;color:#003366;padding:6px 0;border-bottom:2px solid #1976D2;margin-bottom:8px;letter-spacing:.5px}
+.store-item{background:#f8fafc;border-radius:8px;padding:11px 14px;margin-bottom:6px;font-size:13px;border-left:3px solid #1976D2}
+.store-item b{display:block;color:#003366;margin-bottom:2px;font-size:13px}
+.store-item span{color:#555;font-size:12px}
+.store-item a{color:#1976D2;text-decoration:none;font-size:12px}
+.tag{display:inline-block;background:#e3f0ff;color:#1976D2;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-right:4px;margin-bottom:3px}
 </style></head>
 <body>
 <div id="ld">⏳ 正在連線 LINE...</div>
 <div id="app" style="display:none">
+
 <div class="card">
   <div class="logo">
     <h1>🔵 三菱可菱水 Cleansui</h1>
@@ -56,25 +57,25 @@ select:focus,input:focus{border-color:#1976D2}
       <label>選擇濾心 / 產品型號</label>
       <select id="product" onchange="updateHint()">
         <optgroup label="━ 龍頭型淨水器 ━">
-          <option value="90|龍頭型濾心（EFC11）">EFC11 — 龍頭型（每3個月）</option>
-          <option value="90|龍頭型濾心（EFC21）">EFC21 — 龍頭型（每3個月）</option>
-          <option value="90|龍頭型濾心（CGC4EW）">CGC4EW — 龍頭型（每3個月）</option>
-          <option value="90|龍頭型濾心（CBC03E）">CBC03E — 龍頭型（每3個月）</option>
+          <option value="90|龍頭型（EFC11）">EFC11 — 龍頭型（每3個月）</option>
+          <option value="90|龍頭型（EFC21）">EFC21 — 龍頭型（每3個月）</option>
+          <option value="90|龍頭型（CGC4EW）">CGC4EW — 龍頭型（每3個月）</option>
+          <option value="90|龍頭型（CBC03E）">CBC03E — 龍頭型（每3個月）</option>
         </optgroup>
         <optgroup label="━ 廚下型淨水器 ━">
-          <option value="365|廚下型濾心（EUC2000）">EUC2000 — 廚下型（每12個月）</option>
-          <option value="365|廚下型濾心（UZC2000）">UZC2000 — 廚下型（每12個月）</option>
+          <option value="365|廚下型（EUC2000）">EUC2000 — 廚下型（每12個月）</option>
+          <option value="365|廚下型（UZC2000）">UZC2000 — 廚下型（每12個月）</option>
         </optgroup>
         <optgroup label="━ 檯面型淨水器 ━">
-          <option value="365|檯面型濾心（ET201）">ET201 — 檯面型（每12個月）</option>
+          <option value="365|檯面型（ET201）">ET201 — 檯面型（每12個月）</option>
         </optgroup>
         <optgroup label="━ 淨水壺 ━">
           <option value="90|淨水壺濾心">淨水壺濾心（每3個月）</option>
         </optgroup>
         <optgroup label="━ 除氯沐浴器 ━">
-          <option value="60|除氯沐浴器濾心（ESC21W）">ESC21W — 除氯沐浴器（每2個月）</option>
-          <option value="120|除氯沐浴器濾心（ESC11）">ESC11 — 除氯沐浴器（每4個月）</option>
-          <option value="30|除氯沐浴器濾心（ESC31Z）">ESC31Z — 除氯沐浴器（每1個月）</option>
+          <option value="60|ESC21W（除氯沐浴器）">ESC21W — 除氯沐浴器（每2個月）</option>
+          <option value="120|ESC11（除氯沐浴器）">ESC11 — 除氯沐浴器（每4個月）</option>
+          <option value="30|ESC31Z（除氯沐浴器）">ESC31Z — 除氯沐浴器（每1個月）</option>
         </optgroup>
       </select>
       <div id="prod-hint" class="hint"></div>
@@ -87,7 +88,7 @@ select:focus,input:focus{border-color:#1976D2}
       <div class="ic">🎉</div>
       <h2>提醒設定成功！</h2>
       <p id="r-msg"></p>
-      <p class="sub">到期前3天及當天將透過 LINE 通知您</p>
+      <p class="sub">到期前3天及當天將透過 LINE 通知您 💧</p>
     </div>
   </div>
 
@@ -101,7 +102,7 @@ select:focus,input:focus{border-color:#1976D2}
       <label>購買日期</label>
       <input type="date" id="reg-date">
       <label>購買地點</label>
-      <input type="text" id="reg-place" placeholder="例：SOGO 忠孝館、官方購物網">
+      <input type="text" id="reg-place" placeholder="例：KIDA官方購物網、SOGO忠孝館">
       <div class="info-box">ℹ️ 產品保固期為購買日起 <b>1 年</b>，登錄後系統將自動在保固到期前提醒您。</div>
       <button class="btn green" id="reg-btn" onclick="doRegister()">📋 完成產品登錄</button>
     </div>
@@ -116,39 +117,60 @@ select:focus,input:focus{border-color:#1976D2}
   <!-- Tab3: 購買據點 -->
   <div id="tab-store" class="section">
     <div class="info-box" style="margin-top:0;margin-bottom:16px">
-      📞 客服專線：<b>02-2756-5899</b><br>
+      📞 客服：<b>02-2756-5899</b><br>
       ✉️ cleansui.tw@gmail.com<br>
-      🕐 週一～週五 09:00–18:00
+      🕐 週一～週五 09:00-18:00
     </div>
 
-    <div class="store-section">
-      <div class="store-section-title">🌐 線上購買</div>
+    <div class="store-group">
+      <div class="store-group-title">🛒 官方購物網</div>
       <div class="store-item">
-        <b>官方購物網</b>
-        <span><a href="https://www.kida.tw/" target="_blank">www.kida.tw</a></span>
+        <b>KIDA 吉達興居家生活</b>
+        <a href="https://www.kida.tw/" target="_blank">🔗 www.kida.tw</a>
       </div>
     </div>
 
-    <div class="divider"></div>
+    <div class="store-group">
+      <div class="store-group-title">🏬 SOGO 太平洋百貨</div>
+      <div class="store-item">
+        <b>忠孝館</b><span>台北市大安區忠孝東路四段45號</span>
+      </div>
+      <div class="store-item">
+        <b>天母店</b><span>台北市士林區天母東路68號</span>
+      </div>
+      <div class="store-item">
+        <b>中壢店</b><span>桃園市中壢區元化路357號</span>
+      </div>
+      <div class="store-item">
+        <b>大巨蛋店</b><span>台北市松山區忠孝東路五段1號</span>
+      </div>
+      <div class="store-item">
+        <b>新竹巨城店</b><span>新竹市東區中央路229號</span>
+      </div>
+    </div>
 
-    <div class="store-section">
-      <div class="store-section-title">🏬 實體百貨銷售據點</div>
+    <div class="store-group">
+      <div class="store-group-title">🏬 遠東百貨</div>
       <div class="store-item">
-        <b>SOGO 百貨</b>
-        <span>忠孝館・天母店・中壢店・大巨蛋店・新竹巨城店</span>
+        <b>板橋中山店</b><span>新北市板橋區中山路一段152號</span>
+      </div>
+    </div>
+
+    <div class="store-group">
+      <div class="store-group-title">🏬 新光三越百貨</div>
+      <div class="store-item">
+        <b>站前店</b><span>台北市中正區忠孝西路一段83號</span>
       </div>
       <div class="store-item">
-        <b>遠東百貨</b>
-        <span>板橋中山店</span>
+        <b>信義 A8 館</b><span>台北市信義區松高路19號</span>
       </div>
       <div class="store-item">
-        <b>新光三越</b>
-        <span>站前店・信義A8館・南西店</span>
+        <b>南西店</b><span>台北市中山區南京西路14號</span>
       </div>
     </div>
   </div>
-
 </div>
+
 </div>
 <script>
 const LIFF_ID="2009728428-SfuyDoV1";
@@ -156,21 +178,27 @@ const BACKEND="https://line-reminder-backend.onrender.com";
 let uid="";
 
 function showTab(t){
-  ['reminder','register','store'].forEach(n=>{document.getElementById('tab-'+n).classList.toggle('show',n===t);});
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>{b.classList.toggle('active',['reminder','register','store'][i]===t);});
+  ['reminder','register','store'].forEach(n=>{
+    document.getElementById('tab-'+n).classList.toggle('show',n===t);
+  });
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active',['reminder','register','store'][i]===t);
+  });
 }
 
 const hints={'90':'更換週期：每 3 個月','365':'更換週期：每 12 個月','60':'更換週期：每 2 個月','120':'更換週期：每 4 個月','30':'更換週期：每 1 個月'};
-function updateHint(){const v=document.getElementById('product').value.split('|')[0];document.getElementById('prod-hint').textContent=hints[v]||'';}
+function updateHint(){
+  const val=document.getElementById('product').value.split('|')[0];
+  document.getElementById('prod-hint').textContent=hints[val]||'';
+}
 
 (async()=>{
   try{
     await liff.init({liffId:LIFF_ID});
     if(!liff.isLoggedIn()){liff.login();return;}
     const p=await liff.getProfile();uid=p.userId;
-    const today=new Date().toISOString().split('T')[0];
-    document.getElementById('lastDate').value=today;
-    document.getElementById('reg-date').value=today;
+    document.getElementById('lastDate').value=new Date().toISOString().split('T')[0];
+    document.getElementById('reg-date').value=new Date().toISOString().split('T')[0];
     document.getElementById('ld').style.display='none';
     document.getElementById('app').style.display='block';
     updateHint();

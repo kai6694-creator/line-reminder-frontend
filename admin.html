@@ -16,7 +16,11 @@ body{font-family:-apple-system,'Noto Sans TC',sans-serif;background:#f0f4f7;colo
 .login-box input:focus{border-color:#0078A0}
 .login-box button{width:100%;padding:13px;background:#0078A0;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s}
 .login-box button:hover{background:#005f82}
+.login-box button:disabled{background:#8ab8c8;cursor:not-allowed}
 .login-error{color:#e74c3c;font-size:13px;text-align:center;margin-top:8px;display:none}
+.login-status{color:#0078A0;font-size:12px;text-align:center;margin-top:10px;min-height:18px}
+.spinner{display:inline-block;width:12px;height:12px;border:2px solid #0078A0;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
 #main-screen{display:none}
 .topbar{background:#fff;border-bottom:1px solid #e8eef3;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
 .topbar-logo{font-size:17px;font-weight:700;color:#0078A0}
@@ -92,8 +96,9 @@ tr:hover td{background:#fafcff}
       <div class="sub">管理員後台</div>
     </div>
     <input type="password" id="admin-key-input" placeholder="請輸入管理員金鑰" onkeydown="if(event.key==='Enter')doLogin()" />
-    <button onclick="doLogin()">登入後台</button>
+    <button id="login-btn" onclick="doLogin()">登入後台</button>
     <div class="login-error" id="login-error">金鑰錯誤，請重新輸入</div>
+    <div class="login-status" id="login-status"></div>
   </div>
 </div>
 <div id="main-screen">
@@ -105,7 +110,7 @@ tr:hover td{background:#fafcff}
     <button class="tab-btn active" onclick="switchTab('reminders',this)">🔔 濾心提醒客戶</button>
     <button class="tab-btn" onclick="switchTab('registrations',this)">📋 保固登錄客戶</button>
   </div>
-  <div class="stats-bar" id="stats-bar">
+  <div class="stats-bar">
     <div class="stat-card"><div class="stat-label">提醒設定人數</div><div class="stat-value" id="stat-reminders">—</div></div>
     <div class="stat-card"><div class="stat-label">保固登錄人數</div><div class="stat-value" id="stat-registrations">—</div></div>
     <div class="stat-card urgent"><div class="stat-label">⚠️ 5天內到期</div><div class="stat-value" id="stat-urgent">—</div></div>
@@ -155,16 +160,65 @@ tr:hover td{background:#fafcff}
 <script>
 const BACKEND_URL="https://line-reminder-backend.onrender.com";
 let ADMIN_KEY="",currentPushUserId="",currentPushProductName="";
+
+function setStatus(msg,isError){
+  const s=document.getElementById("login-status");
+  s.innerHTML=msg?'<span class="spinner"></span>'+msg:'';
+  const e=document.getElementById("login-error");
+  if(isError){e.style.display="block";e.textContent=msg;s.innerHTML="";}
+  else e.style.display="none";
+}
+
+function fetchWithTimeout(url,options,timeout=70000){
+  return Promise.race([
+    fetch(url,options),
+    new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),timeout))
+  ]);
+}
+
 function doLogin(){
   const key=document.getElementById("admin-key-input").value.trim();
   if(!key)return;
   ADMIN_KEY=key;
-  fetch(BACKEND_URL+"/api/admin/stats",{headers:{"x-admin-key":ADMIN_KEY}}).then(r=>{
-    if(r.ok){document.getElementById("login-screen").style.display="none";document.getElementById("main-screen").style.display="block";loadStats();loadReminders();}
-    else{document.getElementById("login-error").style.display="block";ADMIN_KEY="";}
-  }).catch(()=>{document.getElementById("login-error").style.display="block";ADMIN_KEY="";});
+  const btn=document.getElementById("login-btn");
+  btn.disabled=true;
+  btn.textContent="登入中...";
+  setStatus("正在連線伺服器，請稍候...");
+
+  let sec=0;
+  const timer=setInterval(()=>{
+    sec++;
+    if(sec<10) setStatus("正在連線伺服器，請稍候...");
+    else if(sec<40) setStatus("伺服器喚醒中，約需 30~60 秒，請耐心等候 ⏳");
+    else setStatus("即將完成，請再等一下... ☕");
+  },1000);
+
+  fetchWithTimeout(BACKEND_URL+"/api/admin/stats",{headers:{"x-admin-key":ADMIN_KEY}},75000)
+    .then(r=>{
+      clearInterval(timer);
+      if(r.ok){
+        document.getElementById("login-screen").style.display="none";
+        document.getElementById("main-screen").style.display="block";
+        loadStats();loadReminders();
+      } else {
+        btn.disabled=false;btn.textContent="登入後台";
+        setStatus("",true);
+        document.getElementById("login-error").textContent="金鑰錯誤，請重新輸入";
+        document.getElementById("login-error").style.display="block";
+        ADMIN_KEY="";
+      }
+    })
+    .catch(e=>{
+      clearInterval(timer);
+      btn.disabled=false;btn.textContent="登入後台";
+      setStatus("",true);
+      document.getElementById("login-error").textContent="連線失敗，請再試一次（伺服器可能仍在啟動中）";
+      document.getElementById("login-error").style.display="block";
+      ADMIN_KEY="";
+    });
 }
-function doLogout(){ADMIN_KEY="";document.getElementById("login-screen").style.display="flex";document.getElementById("main-screen").style.display="none";document.getElementById("admin-key-input").value="";}
+
+function doLogout(){ADMIN_KEY="";document.getElementById("login-screen").style.display="flex";document.getElementById("main-screen").style.display="none";document.getElementById("admin-key-input").value="";setStatus("");}
 function switchTab(tab,btn){
   document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
@@ -191,7 +245,7 @@ function loadReminders(){
       const uid_short=r.userId.substring(0,6)+"..."+r.userId.substring(r.userId.length-4);
       return '<tr><td>'+(i+1)+'</td><td><span class="uid" title="'+r.userId+'">'+uid_short+'</span></td><td><strong>'+(r.productName||"未填寫")+'</strong></td><td>'+r.nextDate+'</td><td>'+badge+'</td><td><div class="progress-wrap"><div style="font-size:11px;color:#999">'+pct+'%</div><div class="progress-track"><div class="progress-bar" style="width:'+pct+'%;background:'+barColor+'"></div></div></div></td><td style="font-size:12px;color:#999">'+(r.createdAt?r.createdAt.substring(0,10):"—")+'</td><td><button class="push-btn" onclick="openPushModal(''+r.userId+'',''+((r.productName||"可菱水濾心").replace(/'/g,"\'"))+'')">推播</button></td></tr>';
     }).join("");loadStats();
-  }).catch(()=>{tbody.innerHTML='<tr><td colspan="8" class="empty">載入失敗，請確認後端伺服器狀態</td></tr>';});
+  }).catch(()=>{tbody.innerHTML='<tr><td colspan="8" class="empty">載入失敗，請按「重新載入」</td></tr>';});
 }
 function loadRegistrations(){
   const tbody=document.getElementById("registrations-tbody");
@@ -204,7 +258,7 @@ function loadRegistrations(){
       const uid_short=r.userId.substring(0,6)+"..."+r.userId.substring(r.userId.length-4);
       return '<tr><td>'+(i+1)+'</td><td><span class="uid" title="'+r.userId+'">'+uid_short+'</span></td><td><strong>'+r.productName+'</strong></td><td style="font-size:12px;color:#666">'+r.productCode+'</td><td>'+r.purchaseDate+'</td><td style="font-size:12px">'+r.purchasePlace+'</td><td>'+r.warrantyEnd+'</td><td>'+badge+'</td><td><button class="push-btn" onclick="openPushModal(''+r.userId+'',''+r.productName.replace(/'/g,"\'")+'')">推播</button></td></tr>';
     }).join("");
-  }).catch(()=>{tbody.innerHTML='<tr><td colspan="9" class="empty">載入失敗，請確認後端伺服器狀態</td></tr>';});
+  }).catch(()=>{tbody.innerHTML='<tr><td colspan="9" class="empty">載入失敗，請按「重新載入」</td></tr>';});
 }
 function openPushModal(userId,productName){
   currentPushUserId=userId;currentPushProductName=productName;

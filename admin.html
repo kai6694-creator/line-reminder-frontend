@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KIDA 可菱水｜管理後台</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Noto Sans TC',sans-serif;background:#f0f4f7;color:#2d3e50;min-height:100vh}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#003D57,#0078A0)}
+.login-box{background:#fff;border-radius:16px;padding:40px 36px;width:340px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo .logo-text{font-size:22px;font-weight:700;color:#0078A0}
+.login-logo .sub{font-size:12px;color:#888;margin-top:4px}
+.login-box input{width:100%;padding:12px 14px;border:1.5px solid #e0e8ee;border-radius:8px;font-size:15px;margin-bottom:14px;outline:none;transition:border-color .2s}
+.login-box input:focus{border-color:#0078A0}
+.login-box button{width:100%;padding:13px;background:#0078A0;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s}
+.login-box button:hover{background:#005f82}
+.login-error{color:#e74c3c;font-size:13px;text-align:center;margin-top:8px;display:none}
+#main-screen{display:none}
+.topbar{background:#fff;border-bottom:1px solid #e8eef3;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.topbar-logo{font-size:17px;font-weight:700;color:#0078A0}
+.topbar-logo span{font-size:12px;font-weight:400;color:#999;margin-left:8px}
+.logout-btn{font-size:13px;color:#999;cursor:pointer;border:none;background:none;padding:6px 12px;border-radius:6px}
+.logout-btn:hover{background:#f5f5f5;color:#666}
+.tabs{background:#fff;border-bottom:1px solid #e8eef3;padding:0 24px;display:flex;gap:0}
+.tab-btn{padding:14px 20px;font-size:14px;color:#888;border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;transition:all .2s;font-weight:500}
+.tab-btn.active{color:#0078A0;border-bottom-color:#0078A0}
+.tab-btn:hover:not(.active){color:#555}
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:20px 24px}
+.stat-card{background:#fff;border-radius:12px;padding:16px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);border:1px solid #edf2f7}
+.stat-label{font-size:12px;color:#999;margin-bottom:6px}
+.stat-value{font-size:28px;font-weight:700;color:#2d3e50}
+.stat-card.urgent .stat-value{color:#e67e22}
+.stat-card.danger .stat-value{color:#e74c3c}
+.content{padding:0 24px 24px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;margin-top:4px}
+.section-title{font-size:15px;font-weight:600;color:#2d3e50}
+.refresh-btn{font-size:13px;color:#0078A0;border:1.5px solid #0078A0;background:none;border-radius:6px;padding:5px 14px;cursor:pointer;transition:all .2s}
+.refresh-btn:hover{background:#0078A0;color:#fff}
+.table-wrap{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.07);border:1px solid #edf2f7}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead tr{background:#f8fafc}
+th{padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #edf2f7}
+td{padding:13px 16px;border-bottom:1px solid #f4f7fa;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafcff}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-ok{background:#e8f5e9;color:#2e7d32}
+.badge-warn{background:#fff3e0;color:#e65100}
+.badge-danger{background:#fce4ec;color:#c62828}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.progress-wrap{width:100px}
+.progress-track{height:6px;background:#eee;border-radius:3px;overflow:hidden;margin-top:4px}
+.progress-bar{height:100%;border-radius:3px;transition:width .3s}
+.push-btn{padding:6px 14px;font-size:12px;font-weight:600;border:none;border-radius:6px;cursor:pointer;transition:all .2s;background:#0078A0;color:#fff}
+.push-btn:hover{background:#005f82;transform:translateY(-1px)}
+.push-btn:active{transform:translateY(0)}
+.push-btn:disabled{background:#ccc;cursor:not-allowed;transform:none}
+.uid{font-family:monospace;font-size:12px;color:#666;background:#f5f5f5;padding:2px 6px;border-radius:4px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.loading{text-align:center;padding:40px;color:#999;font-size:14px}
+.empty{text-align:center;padding:40px;color:#bbb;font-size:14px}
+#toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:#2d3e50;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,0.2);transform:translateY(80px);opacity:0;transition:all .3s}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.success{background:#27ae60}
+#toast.error{background:#e74c3c}
+#push-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center}
+#push-modal.open{display:flex}
+.modal-box{background:#fff;border-radius:16px;padding:28px;width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:6px}
+.modal-sub{font-size:13px;color:#888;margin-bottom:20px}
+.modal-label{font-size:12px;font-weight:600;color:#666;margin-bottom:6px}
+.modal-box textarea{width:100%;border:1.5px solid #e0e8ee;border-radius:8px;padding:10px 12px;font-size:14px;resize:vertical;min-height:80px;outline:none;font-family:inherit}
+.modal-box textarea:focus{border-color:#0078A0}
+.modal-actions{display:flex;gap:10px;margin-top:16px}
+.modal-actions button{flex:1;padding:11px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none}
+.btn-cancel{background:#f0f4f7;color:#666}
+.btn-cancel:hover{background:#e8eef3}
+.btn-send{background:#0078A0;color:#fff}
+.btn-send:hover{background:#005f82}
+.modal-flex-note{background:#e8f4fb;border-radius:8px;padding:10px 12px;font-size:12px;color:#0078A0;margin-bottom:10px}
+@media(max-width:768px){.stats-bar{grid-template-columns:repeat(2,1fr)}.topbar,.tabs,.content{padding-left:16px;padding-right:16px}}
+</style>
+</head>
+<body>
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-text">💧 KIDA 可菱水</div>
+      <div class="sub">管理員後台</div>
+    </div>
+    <input type="password" id="admin-key-input" placeholder="請輸入管理員金鑰" onkeydown="if(event.key==='Enter')doLogin()" />
+    <button onclick="doLogin()">登入後台</button>
+    <div class="login-error" id="login-error">金鑰錯誤，請重新輸入</div>
+  </div>
+</div>
+<div id="main-screen">
+  <div class="topbar">
+    <div class="topbar-logo">💧 KIDA 可菱水 <span>客戶管理後台</span></div>
+    <button class="logout-btn" onclick="doLogout()">登出</button>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('reminders',this)">🔔 濾心提醒客戶</button>
+    <button class="tab-btn" onclick="switchTab('registrations',this)">📋 保固登錄客戶</button>
+  </div>
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat-card"><div class="stat-label">提醒設定人數</div><div class="stat-value" id="stat-reminders">—</div></div>
+    <div class="stat-card"><div class="stat-label">保固登錄人數</div><div class="stat-value" id="stat-registrations">—</div></div>
+    <div class="stat-card urgent"><div class="stat-label">⚠️ 5天內到期</div><div class="stat-value" id="stat-urgent">—</div></div>
+    <div class="stat-card danger"><div class="stat-label">🚨 已逾期</div><div class="stat-value" id="stat-overdue">—</div></div>
+  </div>
+  <div class="content">
+    <div class="tab-content active" id="tab-reminders">
+      <div class="section-header">
+        <div class="section-title">濾心提醒設定客戶</div>
+        <button class="refresh-btn" onclick="loadReminders()">↻ 重新載入</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>客戶ID</th><th>產品</th><th>到期日</th><th>狀態</th><th>使用進度</th><th>登錄時間</th><th>操作</th></tr></thead>
+          <tbody id="reminders-tbody"><tr><td colspan="8" class="loading">載入中...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="tab-content" id="tab-registrations">
+      <div class="section-header">
+        <div class="section-title">產品保固登錄客戶</div>
+        <button class="refresh-btn" onclick="loadRegistrations()">↻ 重新載入</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>客戶ID</th><th>產品</th><th>型號</th><th>購買日</th><th>通路</th><th>保固到期</th><th>保固狀態</th><th>操作</th></tr></thead>
+          <tbody id="registrations-tbody"><tr><td colspan="9" class="loading">載入中...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="push-modal">
+  <div class="modal-box">
+    <div class="modal-title">📨 手動推播訊息</div>
+    <div class="modal-sub" id="modal-uid-display"></div>
+    <div class="modal-flex-note">💡 留空則自動發送含「購買濾心」按鈕的 Flex 推播卡片</div>
+    <div class="modal-label">自訂訊息（選填）</div>
+    <textarea id="push-message" placeholder="例：您好，您的濾心即將到期，歡迎前往購買！&#10;&#10;官網：www.kida.tw&#10;客服電話：02-2756-5899"></textarea>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePushModal()">取消</button>
+      <button class="btn-send" onclick="doSendPush()">發送推播</button>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+const BACKEND_URL="https://line-reminder-backend.onrender.com";
+let ADMIN_KEY="",currentPushUserId="",currentPushProductName="";
+function doLogin(){
+  const key=document.getElementById("admin-key-input").value.trim();
+  if(!key)return;
+  ADMIN_KEY=key;
+  fetch(BACKEND_URL+"/api/admin/stats",{headers:{"x-admin-key":ADMIN_KEY}}).then(r=>{
+    if(r.ok){document.getElementById("login-screen").style.display="none";document.getElementById("main-screen").style.display="block";loadStats();loadReminders();}
+    else{document.getElementById("login-error").style.display="block";ADMIN_KEY="";}
+  }).catch(()=>{document.getElementById("login-error").style.display="block";ADMIN_KEY="";});
+}
+function doLogout(){ADMIN_KEY="";document.getElementById("login-screen").style.display="flex";document.getElementById("main-screen").style.display="none";document.getElementById("admin-key-input").value="";}
+function switchTab(tab,btn){
+  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("tab-"+tab).classList.add("active");btn.classList.add("active");
+  if(tab==="reminders")loadReminders();if(tab==="registrations")loadRegistrations();
+}
+function loadStats(){
+  fetch(BACKEND_URL+"/api/admin/stats",{headers:{"x-admin-key":ADMIN_KEY}}).then(r=>r.json()).then(d=>{
+    document.getElementById("stat-reminders").textContent=d.totalReminders??"—";
+    document.getElementById("stat-registrations").textContent=d.totalRegistrations??"—";
+    document.getElementById("stat-urgent").textContent=d.urgentCount??"—";
+    document.getElementById("stat-overdue").textContent=d.overdueCount??"—";
+  }).catch(()=>{});
+}
+function loadReminders(){
+  const tbody=document.getElementById("reminders-tbody");
+  tbody.innerHTML='<tr><td colspan="8" class="loading">載入中...</td></tr>';
+  fetch(BACKEND_URL+"/api/admin/reminders",{headers:{"x-admin-key":ADMIN_KEY}}).then(r=>r.json()).then(data=>{
+    if(!data.length){tbody.innerHTML='<tr><td colspan="8" class="empty">尚無資料</td></tr>';return;}
+    tbody.innerHTML=data.map((r,i)=>{
+      const d=r.daysLeft,pct=Math.min(100,Math.max(0,Math.round((r.productDays-Math.max(0,d))/r.productDays*100)));
+      const barColor=d<0?"#e74c3c":d<=5?"#e67e22":"#27ae60";
+      const badge=d<0?'<span class="badge badge-danger"><span class="badge-dot"></span>已逾期'+Math.abs(d)+'天</span>':d===0?'<span class="badge badge-danger"><span class="badge-dot"></span>今日到期</span>':d<=5?'<span class="badge badge-warn"><span class="badge-dot"></span>剩'+d+'天</span>':'<span class="badge badge-ok"><span class="badge-dot"></span>剩'+d+'天</span>';
+      const uid_short=r.userId.substring(0,6)+"..."+r.userId.substring(r.userId.length-4);
+      return '<tr><td>'+(i+1)+'</td><td><span class="uid" title="'+r.userId+'">'+uid_short+'</span></td><td><strong>'+(r.productName||"未填寫")+'</strong></td><td>'+r.nextDate+'</td><td>'+badge+'</td><td><div class="progress-wrap"><div style="font-size:11px;color:#999">'+pct+'%</div><div class="progress-track"><div class="progress-bar" style="width:'+pct+'%;background:'+barColor+'"></div></div></div></td><td style="font-size:12px;color:#999">'+(r.createdAt?r.createdAt.substring(0,10):"—")+'</td><td><button class="push-btn" onclick="openPushModal(''+r.userId+'',''+((r.productName||"可菱水濾心").replace(/'/g,"\'"))+'')">推播</button></td></tr>';
+    }).join("");loadStats();
+  }).catch(()=>{tbody.innerHTML='<tr><td colspan="8" class="empty">載入失敗，請確認後端伺服器狀態</td></tr>';});
+}
+function loadRegistrations(){
+  const tbody=document.getElementById("registrations-tbody");
+  tbody.innerHTML='<tr><td colspan="9" class="loading">載入中...</td></tr>';
+  fetch(BACKEND_URL+"/api/admin/registrations",{headers:{"x-admin-key":ADMIN_KEY}}).then(r=>r.json()).then(data=>{
+    if(!data.length){tbody.innerHTML='<tr><td colspan="9" class="empty">尚無資料</td></tr>';return;}
+    tbody.innerHTML=data.map((r,i)=>{
+      const d=r.warrantyDaysLeft;
+      const badge=d<0?'<span class="badge badge-danger"><span class="badge-dot"></span>已過期</span>':d<=30?'<span class="badge badge-warn"><span class="badge-dot"></span>剩'+d+'天</span>':'<span class="badge badge-ok"><span class="badge-dot"></span>剩'+d+'天</span>';
+      const uid_short=r.userId.substring(0,6)+"..."+r.userId.substring(r.userId.length-4);
+      return '<tr><td>'+(i+1)+'</td><td><span class="uid" title="'+r.userId+'">'+uid_short+'</span></td><td><strong>'+r.productName+'</strong></td><td style="font-size:12px;color:#666">'+r.productCode+'</td><td>'+r.purchaseDate+'</td><td style="font-size:12px">'+r.purchasePlace+'</td><td>'+r.warrantyEnd+'</td><td>'+badge+'</td><td><button class="push-btn" onclick="openPushModal(''+r.userId+'',''+r.productName.replace(/'/g,"\'")+'')">推播</button></td></tr>';
+    }).join("");
+  }).catch(()=>{tbody.innerHTML='<tr><td colspan="9" class="empty">載入失敗，請確認後端伺服器狀態</td></tr>';});
+}
+function openPushModal(userId,productName){
+  currentPushUserId=userId;currentPushProductName=productName;
+  document.getElementById("modal-uid-display").textContent="客戶："+userId.substring(0,6)+"..."+userId.substring(userId.length-4)+"｜產品："+productName;
+  document.getElementById("push-message").value="";
+  document.getElementById("push-modal").classList.add("open");
+}
+function closePushModal(){document.getElementById("push-modal").classList.remove("open");currentPushUserId="";currentPushProductName="";}
+function doSendPush(){
+  if(!currentPushUserId)return;
+  const msg=document.getElementById("push-message").value.trim();
+  const sendBtn=document.querySelector(".btn-send");sendBtn.disabled=true;sendBtn.textContent="發送中...";
+  const body={userId:currentPushUserId,productName:currentPushProductName};if(msg)body.message=msg;
+  fetch(BACKEND_URL+"/api/admin/push",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":ADMIN_KEY},body:JSON.stringify(body)}).then(r=>r.json()).then(d=>{
+    sendBtn.disabled=false;sendBtn.textContent="發送推播";closePushModal();
+    d.success?showToast("✅ 推播成功！","success"):showToast("❌ 推播失敗："+(d.error||"未知錯誤"),"error");
+  }).catch(()=>{sendBtn.disabled=false;sendBtn.textContent="發送推播";showToast("❌ 網路錯誤，請重試","error");});
+}
+function showToast(msg,type=""){const t=document.getElementById("toast");t.textContent=msg;t.className="show "+type;setTimeout(()=>{t.className=""},3000);}
+document.getElementById("push-modal").addEventListener("click",function(e){if(e.target===this)closePushModal();});
+</script>
+</body>
+</html>

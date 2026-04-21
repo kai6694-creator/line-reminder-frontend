@@ -219,6 +219,12 @@ async function doReminder() {
     document.getElementById('r-form').style.display = 'none';
     document.getElementById('r-ok').style.display = 'block';
     document.getElementById('r-msg').textContent = '產品類型：' + name + '\n下次更換日：' + next;
+    // 自動觸發 Webhook 配對正確的 Messaging API userId
+    try {
+      if (liff.isInClient()) {
+        await liff.sendMessages([{ type: 'text', text: 'KIDA_提醒設定完成' }]);
+      }
+    } catch(e) { console.log('trigger:', e.message); }
   } catch(e) {
     alert('設定失敗：' + e.message);
     btn.disabled = false; btn.textContent = '✅ 設定更換提醒';

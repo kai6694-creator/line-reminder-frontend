@@ -12,9 +12,6 @@ body{font-family:sans-serif;background:#e8f4f8;min-height:100vh;padding:16px}
 .logo{text-align:center;margin-bottom:20px}
 .logo h1{font-size:17px;font-weight:700;color:#003366}
 .logo p{font-size:12px;color:#888;margin-top:3px}h
-.tabs{display:flex;gap:6px;margin-bottom:20px}
-.tab-btn{flex:1;padding:9px 2px;border:2px solid #d0dce6;border-radius:10px;font-size:12px;font-weight:600;color:#666;background:white;cursor:pointer}
-.tab-btn.active{border-color:#1976D2;background:#1976D2;color:white}
 .sec{display:none}.sec.show{display:block}
 label{display:block;font-size:13px;font-weight:600;color:#444;margin:14px 0 5px}
 select,input{width:100%;padding:11px 13px;border:1.5px solid #ddd;border-radius:9px;font-size:14px;color:#333;background:#fafafa;outline:none}
@@ -51,14 +48,9 @@ select,input{width:100%;padding:11px 13px;border:1.5px solid #ddd;border-radius:
     <h1>🔵 三菱可菱水 Cleansui</h1>
     <p>官方會員服務中心</p>
   </div>
-  <div class="tabs">
-    <button class="tab-btn active" onclick="showTab('r')">💧 濾心提醒</button>
-    <button class="tab-btn" onclick="showTab('g')">📋 產品登錄</button>
-    <button class="tab-btn" onclick="showTab('s')">📍 購買據點</button>
-  </div>
 
   <!-- 濾心提醒 -->
-  <div id="sec-r" class="sec show">
+  <div id="sec-r" class="sec" style="display:block">
     <div id="r-form">
       <label>選擇產品類型</label>
       <select id="prod" onchange="showHint()">
@@ -89,52 +81,7 @@ select,input{width:100%;padding:11px 13px;border:1.5px solid #ddd;border-radius:
     </div>
   </div>
 
-  <!-- 產品登錄 -->
-  <div id="sec-g" class="sec">
-    <div id="g-form">
-      <label>產品名稱</label>
-      <input type="text" id="g-name" placeholder="例：廚下型淨水器">
-      <label>產品型號</label>
-      <input type="text" id="g-code" placeholder="例：EUC2000">
-      <label>購買日期</label>
-      <input type="date" id="g-date">
-      <label>購買地點</label>
-      <input type="text" id="g-place" placeholder="例：KIDA官方購物網">
-      <div class="ibox">ℹ️ 保固期為購買日起 <b>1 年</b>，到期前將自動 LINE 提醒您。</div>
-      <button class="btn btn-green" id="g-btn" onclick="doRegister()">📋 完成產品登錄</button>
-    </div>
-    <div id="g-ok" class="ok" style="display:none">
-      <div class="ok-ic">✅</div><h2>登錄成功！</h2>
-      <p id="g-msg"></p>
-      <p class="sub">保固到期前30天及7天將透過 LINE 提醒您</p>
-    </div>
-  </div>
-
-  <!-- 購買據點 -->
-  <div id="sec-s" class="sec">
-    <button class="btn-line" onclick="window.open('https://line.me/R/ti/p/@kida888','_blank')">💬 LINE 客服 @kida888</button>
-    <div class="ibox" style="margin-top:0;margin-bottom:16px">
-      📞 <b>02-2756-5899</b>｜週一～週五 09:00-18:00<br>✉️ cleansui.tw@gmail.com
-    </div>
-    <div class="sg"><div class="sg-t">🛒 官方購物網</div>
-      <div class="si"><b>KIDA 吉達興居家生活</b><a href="https://www.kida.tw/" target="_blank">🔗 www.kida.tw</a></div>
-    </div>
-    <div class="sg"><div class="sg-t">🏬 SOGO 太平洋百貨</div>
-      <div class="si"><b>忠孝館 8F</b><span>台北市大安區忠孝東路四段45號 8樓</span></div>
-      <div class="si"><b>天母店 6F</b><span>台北市士林區中山北路六段77號 6樓</span></div>
-      <div class="si"><b>中壢店 7F</b><span>桃園市中壢區元化路357號 7樓</span></div>
-      <div class="si"><b>大巨蛋店 6F</b><span>台北市松山區忠孝東路四段505號 6樓</span></div>
-      <div class="si"><b>新竹巨城店 6F</b><span>新竹市東區中央路239號 6樓</span></div>
-    </div>
-    <div class="sg"><div class="sg-t">🏬 遠東百貨</div>
-      <div class="si"><b>板橋中山店 10F</b><span>新北市板橋區中山路一段152號 10樓</span></div>
-    </div>
-    <div class="sg"><div class="sg-t">🏬 新光三越百貨</div>
-      <div class="si"><b>站前店 10F</b><span>台北市中正區忠孝西路一段66號 10樓</span></div>
-      <div class="si"><b>信義 A8 館 7F</b><span>台北市信義區松高路12號 7樓</span></div>
-      <div class="si"><b>南西店 7F</b><span>台北市中山區南京西路12號 7樓</span></div>
-    </div>
-  </div>
+  
 </div>
 </div>
 
@@ -143,57 +90,7 @@ const LIFF_ID = "2009728428-SfuyDoV1";
 const API = "https://line-reminder-backend.onrender.com";
 let uid = "";
 
-function getDefaultTab() {
-  const p = new URLSearchParams(window.location.search);
-  const t = p.get('tab');
-  return ['r','g','s'].includes(t) ? t : 'r';
-}
 
-function showTab(t) {
-  document.querySelectorAll('.sec').forEach(el => el.classList.remove('show'));
-  document.getElementById('sec-' + t).classList.add('show');
-  document.querySelectorAll('.tab-btn').forEach((b, i) => {
-    b.classList.toggle('active', ['r','g','s'][i] === t);
-  });
-}
-
-const H = {
-  '90':'更換週期：每 3 個月',
-  '365':'更換週期：每 12 個月',
-  '60':'更換週期：每 2 個月',
-  '120':'更換週期：每 4 個月',
-  '30':'更換週期：每 1 個月'
-};
-function showHint() {
-  const v = document.getElementById('prod').value.split('|')[0];
-  document.getElementById('r-hint').textContent = H[v] || '';
-}
-
-function showErr(msg) {
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('err-box').style.display = 'block';
-  document.getElementById('err-msg').textContent = msg;
-}
-
-const timer = setTimeout(() => {
-  showErr('連線逾時（15秒）。\n請確認您是從 LINE 內開啟此連結。');
-}, 15000);
-
-liff.init({ liffId: LIFF_ID })
-  .then(() => {
-    clearTimeout(timer);
-    if (!liff.isLoggedIn()) { liff.login(); return; }
-    return liff.getProfile();
-  })
-  .then(profile => {
-    if (!profile) return;
-    uid = profile.userId;
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('r-date').value = today;
-    document.getElementById('g-date').value = today;
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    showTab(getDefaultTab());
     showHint();
   })
   .catch(err => {
@@ -231,29 +128,7 @@ async function doReminder() {
   }
 }
 
-async function doRegister() {
-  const name = document.getElementById('g-name').value.trim();
-  const code = document.getElementById('g-code').value.trim();
-  const date = document.getElementById('g-date').value;
-  const place = document.getElementById('g-place').value.trim();
-  if (!name||!code||!date||!place) { alert('請填寫所有欄位！'); return; }
-  const btn = document.getElementById('g-btn');
-  btn.disabled = true; btn.textContent = '⏳ 登錄中...';
-  try {
-    const r = await fetch(API + '/api/register', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({userId:uid, productName:name, productCode:code, purchaseDate:date, purchasePlace:place})
-    });
-    const data = await r.json();
-    if (!r.ok) throw new Error('伺服器錯誤');
-    document.getElementById('g-form').style.display = 'none';
-    document.getElementById('g-ok').style.display = 'block';
-    document.getElementById('g-msg').textContent = '產品：' + name + '（' + code + '）\n購買地點：' + place + '\n保固到期：' + data.warrantyEnd;
-  } catch(e) {
-    alert('登錄失敗：' + e.message);
-    btn.disabled = false; btn.textContent = '📋 完成產品登錄';
-  }
-}
+
 </script>
 </body>
 </html>

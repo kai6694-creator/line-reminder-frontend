@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>三菱可菱水 服務中心</title>
+<title>三菱可菱水 濾心更換提醒</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:sans-serif;background:#e8f4f8;min-height:100vh;padding:16px}
 .card{background:white;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
-.logo{text-align:center;margin-bottom:16px}
+.logo{text-align:center;margin-bottom:20px}
 .logo h1{font-size:18px;color:#003366;margin-bottom:4px}
 .logo p{font-size:13px;color:#888}
 label{display:block;font-size:13px;font-weight:600;color:#444;margin:12px 0 4px}
@@ -17,22 +17,10 @@ select,input[type=date]{width:100%;padding:10px 12px;border:1.5px solid #cce;bor
 .btn{width:100%;padding:14px;background:#1976D2;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:16px}
 .btn:disabled{background:#aaa}
 .hint{font-size:12px;color:#888;margin:4px 0 0}
-.ok{text-align:center;padding:24px 0}
+.ok{text-align:center;padding:32px 0}
 .ok-ic{font-size:48px;margin-bottom:8px}
 .ok h2{color:#1976D2;margin-bottom:8px}
 .sub{font-size:13px;color:#666;margin-top:8px}
-.btn-line{width:100%;padding:12px;background:#06C755;color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:12px}
-.ibox{background:#f0f8ff;border-radius:8px;padding:12px;font-size:13px;color:#444;line-height:1.7;margin-bottom:12px}
-.sg{margin-bottom:16px}
-.sg-t{font-weight:700;color:#003366;font-size:14px;margin-bottom:8px;padding-bottom:4px;border-bottom:2px solid #e8f0f8}
-.si{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:13px}
-.si b{color:#333;min-width:100px}
-.si span{color:#666;font-size:12px;text-align:right}
-.tabs{display:flex;gap:6px;margin-bottom:16px}
-.tab-btn{flex:1;padding:9px 2px;border:2px solid #d0dce6;border-radius:10px;font-size:13px;font-weight:600;color:#666;background:white;cursor:pointer;font-family:inherit}
-.tab-btn.active{border-color:#1976D2;background:#1976D2;color:white}
-.sec{display:none}
-.sec.show{display:block}
 #loading{text-align:center;padding:60px 20px;color:#666;font-size:15px}
 #err-box{display:none;text-align:center;padding:40px 20px;color:#c00}
 #app{display:none}
@@ -46,73 +34,40 @@ select,input[type=date]{width:100%;padding:10px 12px;border:1.5px solid #cce;bor
 <div id="app">
 <div class="card">
   <div class="logo">
-    <h1>🔵 三菱可菱水 Cleansui</h1>
-    <p>官方會員服務中心</p>
+    <h1>💧 三菱可菱水 Cleansui</h1>
+    <p>濾心更換提醒設定</p>
   </div>
 
-  <div class="tabs">
-    <button class="tab-btn" id="tab-r" onclick="showTab('r')">💧 濾心提醒</button>
-    <button class="tab-btn" id="tab-s" onclick="showTab('s')">📍 購買據點</button>
+  <div id="r-form">
+    <label>選擇產品類型</label>
+    <select id="prod" onchange="showHint()">
+      <optgroup label="── 淨水器 ──">
+        <option value="90|龍頭型淨水器">龍頭型淨水器（每3個月更換）</option>
+        <option value="365|檯面型淨水器">檯面型淨水器（每12個月更換）</option>
+        <option value="365|廚下型淨水器">廚下型淨水器（每12個月更換）</option>
+      </optgroup>
+      <optgroup label="── 淨水壺 ──">
+        <option value="90|淨水壺濾心">淨水壺（每3個月更換）</option>
+      </optgroup>
+      <optgroup label="── 除氯沐浴器 ──">
+        <option value="60|ESC21W（除氯沐浴器）">ESC21W（每2個月更換）</option>
+        <option value="120|ESC11（除氯沐浴器）">ESC11（每4個月更換）</option>
+        <option value="30|ESC31Z（除氯沐浴器）">ESC31Z（每1個月更換）</option>
+      </optgroup>
+    </select>
+    <div id="r-hint" class="hint"></div>
+    <label>上次更換 / 安裝日期</label>
+    <input type="date" id="r-date">
+    <p class="hint">全新安裝請選今天</p>
+    <button class="btn" id="r-btn" onclick="doReminder()">✅ 設定更換提醒</button>
   </div>
 
-  <!-- 濾心提醒 -->
-  <div id="sec-r" class="sec">
-    <div id="r-form">
-      <label>選擇產品類型</label>
-      <select id="prod" onchange="showHint()">
-        <optgroup label="── 淨水器 ──">
-          <option value="90|龍頭型淨水器">龍頭型淨水器（每3個月更換）</option>
-          <option value="365|檯面型淨水器">檯面型淨水器（每12個月更換）</option>
-          <option value="365|廚下型淨水器">廚下型淨水器（每12個月更換）</option>
-        </optgroup>
-        <optgroup label="── 淨水壺 ──">
-          <option value="90|淨水壺濾心">淨水壺（每3個月更換）</option>
-        </optgroup>
-        <optgroup label="── 除氯沐浴器 ──">
-          <option value="60|ESC21W（除氯沐浴器）">ESC21W（每2個月更換）</option>
-          <option value="120|ESC11（除氯沐浴器）">ESC11（每4個月更換）</option>
-          <option value="30|ESC31Z（除氯沐浴器）">ESC31Z（每1個月更換）</option>
-        </optgroup>
-      </select>
-      <div id="r-hint" class="hint"></div>
-      <label>上次更換 / 安裝日期</label>
-      <input type="date" id="r-date">
-      <p class="hint">全新安裝請選今天</p>
-      <button class="btn" id="r-btn" onclick="doReminder()">✅ 設定更換提醒</button>
-    </div>
-    <div id="r-ok" class="ok" style="display:none">
-      <div class="ok-ic">🎉</div><h2>提醒設定成功！</h2>
-      <p id="r-msg"></p>
-      <p class="sub">到期前3天及當天將透過 LINE 通知您 💧</p>
-    </div>
+  <div id="r-ok" class="ok" style="display:none">
+    <div class="ok-ic">🎉</div>
+    <h2>提醒設定成功！</h2>
+    <p id="r-msg"></p>
+    <p class="sub">到期前3天及當天將透過 LINE 通知您 💧</p>
   </div>
-
-  <!-- 購買據點 -->
-  <div id="sec-s" class="sec">
-    <button class="btn-line" onclick="window.open('https://line.me/R/ti/p/@kida888','_blank')">💬 LINE 客服 @kida888</button>
-    <div class="ibox" style="margin-top:0;margin-bottom:16px">
-      📞 <b>02-2756-5899</b>｜週一～週五 09:00-18:00<br>✉️ cleansui.tw@gmail.com
-    </div>
-    <div class="sg"><div class="sg-t">🛒 官方購物網</div>
-      <div class="si"><b>KIDA 吉達興居家生活</b><a href="https://www.kida.tw/" target="_blank">🔗 www.kida.tw</a></div>
-    </div>
-    <div class="sg"><div class="sg-t">🏬 SOGO 太平洋百貨</div>
-      <div class="si"><b>忠孝館 8F</b><span>台北市大安區忠孝東路四段45號 8樓</span></div>
-      <div class="si"><b>天母店 6F</b><span>台北市士林區中山北路六段77號 6樓</span></div>
-      <div class="si"><b>中壢店 7F</b><span>桃園市中壢區元化路357號 7樓</span></div>
-      <div class="si"><b>大巨蛋店 6F</b><span>台北市松山區忠孝東路四段505號 6樓</span></div>
-      <div class="si"><b>新竹巨城店 6F</b><span>新竹市東區中央路239號 6樓</span></div>
-    </div>
-    <div class="sg"><div class="sg-t">🏬 遠東百貨</div>
-      <div class="si"><b>板橋中山店 10F</b><span>新北市板橋區中山路一段152號 10樓</span></div>
-    </div>
-    <div class="sg"><div class="sg-t">🏬 新光三越百貨</div>
-      <div class="si"><b>站前店 10F</b><span>台北市中正區忠孝西路一段66號 10樓</span></div>
-      <div class="si"><b>信義 A8 館 7F</b><span>台北市信義區松高路12號 7樓</span></div>
-      <div class="si"><b>南西店 7F</b><span>台北市中山區南京西路12號 7樓</span></div>
-    </div>
-  </div>
-
 </div>
 </div>
 
@@ -120,25 +75,6 @@ select,input[type=date]{width:100%;padding:10px 12px;border:1.5px solid #cce;bor
 const LIFF_ID = "2009728428-SfuyDoV1";
 const API = "https://line-reminder-backend.onrender.com";
 let uid = "";
-
-// ★ 關鍵：在 LIFF init 之前立刻讀取 tab 參數並儲存
-// LIFF init 過程中可能改變 URL，所以必須在這裡就先取得
-(function() {
-  const p = new URLSearchParams(window.location.search);
-  let t = p.get('tab');
-  // LIFF 包裝格式：?liff.state=%3Ftab%3Ds
-  if (!t) {
-    const state = p.get('liff.state');
-    if (state) {
-      try {
-        const decoded = decodeURIComponent(state);
-        const sp = new URLSearchParams(decoded.replace(/^\?/, ''));
-        t = sp.get('tab');
-      } catch(e) {}
-    }
-  }
-  window._KIDA_TAB = ['r','s'].includes(t) ? t : 'r';
-})();
 
 function showErr(msg) {
   document.getElementById('loading').style.display = 'none';
@@ -152,20 +88,6 @@ function showHint() {
   document.getElementById('r-hint').textContent = H[v[0]] || '';
 }
 
-function showTab(t) {
-  // 隱藏所有 sec
-  document.querySelectorAll('.sec').forEach(el => el.classList.remove('show'));
-  // 顯示目標 sec
-  const target = document.getElementById('sec-' + t);
-  if (target) target.classList.add('show');
-  // 更新 tab 按鈕 active 狀態
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  const activeBtn = document.getElementById('tab-' + t);
-  if (activeBtn) activeBtn.classList.add('active');
-}
-
-// getDefaultTab 已改為在 Script 頂部立即執行的 IIFE
-
 const timer = setTimeout(() => showErr('載入逾時，請重新開啟'), 10000);
 
 liff.init({ liffId: LIFF_ID })
@@ -176,7 +98,6 @@ liff.init({ liffId: LIFF_ID })
     uid = profile.userId;
     document.getElementById('loading').style.display = 'none';
     document.getElementById('app').style.display = 'block';
-    showTab(window._KIDA_TAB);
     showHint();
   })
   .catch(err => {

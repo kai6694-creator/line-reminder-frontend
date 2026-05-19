@@ -121,6 +121,25 @@ const LIFF_ID = "2009728428-SfuyDoV1";
 const API = "https://line-reminder-backend.onrender.com";
 let uid = "";
 
+// ★ 關鍵：在 LIFF init 之前立刻讀取 tab 參數並儲存
+// LIFF init 過程中可能改變 URL，所以必須在這裡就先取得
+(function() {
+  const p = new URLSearchParams(window.location.search);
+  let t = p.get('tab');
+  // LIFF 包裝格式：?liff.state=%3Ftab%3Ds
+  if (!t) {
+    const state = p.get('liff.state');
+    if (state) {
+      try {
+        const decoded = decodeURIComponent(state);
+        const sp = new URLSearchParams(decoded.replace(/^\?/, ''));
+        t = sp.get('tab');
+      } catch(e) {}
+    }
+  }
+  window._KIDA_TAB = ['r','s'].includes(t) ? t : 'r';
+})();
+
 function showErr(msg) {
   document.getElementById('loading').style.display = 'none';
   document.getElementById('err-box').style.display = 'block';
@@ -145,22 +164,7 @@ function showTab(t) {
   if (activeBtn) activeBtn.classList.add('active');
 }
 
-function getDefaultTab() {
-  const p = new URLSearchParams(window.location.search);
-  // 1. 直接讀 ?tab= 參數
-  let t = p.get('tab');
-  // 2. LIFF 在 LINE App 裡開啟時，?tab=s 會被包裝成 ?liff.state=%3Ftab%3Ds
-  if (!t) {
-    const state = p.get('liff.state');
-    if (state) {
-      try {
-        const sp = new URLSearchParams(decodeURIComponent(state));
-        t = sp.get('tab');
-      } catch(e) {}
-    }
-  }
-  return ['r', 's'].includes(t) ? t : 'r';
-}
+// getDefaultTab 已改為在 Script 頂部立即執行的 IIFE
 
 const timer = setTimeout(() => showErr('載入逾時，請重新開啟'), 10000);
 
@@ -172,7 +176,7 @@ liff.init({ liffId: LIFF_ID })
     uid = profile.userId;
     document.getElementById('loading').style.display = 'none';
     document.getElementById('app').style.display = 'block';
-    showTab(getDefaultTab());
+    showTab(window._KIDA_TAB);
     showHint();
   })
   .catch(err => {

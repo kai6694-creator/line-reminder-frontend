@@ -90,7 +90,14 @@ const LIFF_ID = "2009728428-SfuyDoV1";
 const API = "https://line-reminder-backend.onrender.com";
 let uid = "";
 
+const timer = setTimeout(() => showErr('載入逾時，請重新開啟'), 10000);
 
+liff.init({ liffId: LIFF_ID })
+  .then(async () => {
+    clearTimeout(timer);
+    if (!liff.isLoggedIn()) { liff.login(); return; }
+    const profile = await liff.getProfile();
+    uid = profile.userId;
     showHint();
   })
   .catch(err => {

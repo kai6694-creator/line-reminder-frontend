@@ -147,7 +147,18 @@ function showTab(t) {
 
 function getDefaultTab() {
   const p = new URLSearchParams(window.location.search);
-  const t = p.get('tab');
+  // 1. 直接讀 ?tab= 參數
+  let t = p.get('tab');
+  // 2. LIFF 在 LINE App 裡開啟時，?tab=s 會被包裝成 ?liff.state=%3Ftab%3Ds
+  if (!t) {
+    const state = p.get('liff.state');
+    if (state) {
+      try {
+        const sp = new URLSearchParams(decodeURIComponent(state));
+        t = sp.get('tab');
+      } catch(e) {}
+    }
+  }
   return ['r', 's'].includes(t) ? t : 'r';
 }
 

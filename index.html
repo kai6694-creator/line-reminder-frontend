@@ -35,6 +35,9 @@ select,input{width:100%;padding:11px 13px;border:1.5px solid #ddd;border-radius:
 .si b{display:block;color:#003366;margin-bottom:2px;font-size:13px}
 .si span{color:#555;font-size:12px;display:block}
 .si a{color:#1976D2;text-decoration:none;font-size:12px}
+.tabs{display:flex;gap:6px;margin-bottom:20px}
+.tab-btn{flex:1;padding:9px 2px;border:2px solid #d0dce6;border-radius:10px;font-size:12px;font-weight:600;color:#666;background:white;cursor:pointer}
+.tab-btn.active{border-color:#1976D2;background:#1976D2;color:white}
 </style>
 </head>
 <body>
@@ -49,8 +52,13 @@ select,input{width:100%;padding:11px 13px;border:1.5px solid #ddd;border-radius:
     <p>官方會員服務中心</p>
   </div>
 
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('r')">💧 濾心提醒</button>
+    <button class="tab-btn" onclick="showTab('s')">📍 購買據點</button>
+  </div>
+
   <!-- 濾心提醒 -->
-  <div id="sec-r" class="sec" style="display:block">
+  <div id="sec-r" class="sec show">
     <div id="r-form">
       <label>選擇產品類型</label>
       <select id="prod" onchange="showHint()">
@@ -85,10 +93,59 @@ select,input{width:100%;padding:11px 13px;border:1.5px solid #ddd;border-radius:
 </div>
 </div>
 
+
+  <!-- 購買據點 -->
+  <div id="sec-s" class="sec">
+    <button class="btn-line" onclick="window.open('https://line.me/R/ti/p/@kida888','_blank')">💬 LINE 客服 @kida888</button>
+    <div class="ibox" style="margin-top:0;margin-bottom:16px">
+      📞 <b>02-2756-5899</b>｜週一～週五 09:00-18:00<br>✉️ cleansui.tw@gmail.com
+    </div>
+    <div class="sg"><div class="sg-t">🛒 官方購物網</div>
+      <div class="si"><b>KIDA 吉達興居家生活</b><a href="https://www.kida.tw/" target="_blank">🔗 www.kida.tw</a></div>
+    </div>
+    <div class="sg"><div class="sg-t">🏬 SOGO 太平洋百貨</div>
+      <div class="si"><b>忠孝館 8F</b><span>台北市大安區忠孝東路四段45號 8樓</span></div>
+      <div class="si"><b>天母店 6F</b><span>台北市士林區中山北路六段77號 6樓</span></div>
+      <div class="si"><b>中壢店 7F</b><span>桃園市中壢區元化路357號 7樓</span></div>
+      <div class="si"><b>大巨蛋店 6F</b><span>台北市松山區忠孝東路四段505號 6樓</span></div>
+      <div class="si"><b>新竹巨城店 6F</b><span>新竹市東區中央路239號 6樓</span></div>
+    </div>
+    <div class="sg"><div class="sg-t">🏬 遠東百貨</div>
+      <div class="si"><b>板橋中山店 10F</b><span>新北市板橋區中山路一段152號 10樓</span></div>
+    </div>
+    <div class="sg"><div class="sg-t">🏬 新光三越百貨</div>
+      <div class="si"><b>站前店 10F</b><span>台北市中正區忠孝西路一段66號 10樓</span></div>
+      <div class="si"><b>信義 A8 館 7F</b><span>台北市信義區松高路12號 7樓</span></div>
+      <div class="si"><b>南西店 7F</b><span>台北市中山區南京西路12號 7樓</span></div>
+    </div>
+  </div>
+
 <script>
 const LIFF_ID = "2009728428-SfuyDoV1";
 const API = "https://line-reminder-backend.onrender.com";
 let uid = "";
+
+function getDefaultTab() {
+  const p = new URLSearchParams(window.location.search);
+  const t = p.get('tab');
+  return ['r','g','s'].includes(t) ? t : 'r';
+}
+
+function showTab(t) {
+  document.querySelectorAll('.sec').forEach(el => el.classList.remove('show'));
+  document.getElementById('sec-' + t).classList.add('show');
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', ['r','g','s'][i] === t);
+  });
+}
+
+const H = {
+  '90':'更換週期：每 3 個月',
+  '365':'更換週期：每 12 個月',
+  '60':'更換週期：每 2 個月',
+  '120':'更換週期：每 4 個月',
+  '30':'更換週期：每 1 個月'
+};
 
 const timer = setTimeout(() => showErr('載入逾時，請重新開啟'), 10000);
 

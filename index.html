@@ -39,6 +39,8 @@ select,input[type=date]{width:100%;padding:10px 12px;border:1.5px solid #cce;bor
   </div>
 
   <div id="r-form">
+    <label>姓名 *</label>
+    <input type="text" id="r-name" placeholder="請輸入您的姓名" style="width:100%;padding:10px 12px;border:1.5px solid #cce;border-radius:8px;font-size:14px;font-family:inherit;color:#333;margin-bottom:4px">
     <label>選擇產品類型</label>
     <select id="prod" onchange="showHint()">
       <optgroup label="── 淨水器 ──">
@@ -106,6 +108,8 @@ liff.init({ liffId: LIFF_ID })
   });
 
 async function doReminder() {
+  const userName = document.getElementById('r-name').value.trim();
+  if (!userName) { alert('請輸入姓名！'); return; }
   const v = document.getElementById('prod').value.split('|');
   const days = parseInt(v[0]), name = v[1];
   const last = document.getElementById('r-date').value;
@@ -117,12 +121,12 @@ async function doReminder() {
   try {
     const r = await fetch(API + '/api/reminder', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({userId:uid, nextDate:next, productDays:days, productName:name})
+      body: JSON.stringify({userId:uid, userName:userName, nextDate:next, productDays:days, productName:name})
     });
     if (!r.ok) throw new Error('伺服器錯誤 ' + r.status);
     document.getElementById('r-form').style.display = 'none';
     document.getElementById('r-ok').style.display = 'block';
-    document.getElementById('r-msg').textContent = '產品類型：' + name + '\n下次更換日：' + next;
+    document.getElementById('r-msg').textContent = '姓名：' + userName + '\n產品類型：' + name + '\n下次更換日：' + next;
     try {
       if (liff.isInClient()) {
         await liff.sendMessages([{ type: 'text', text: 'KIDA_提醒設定完成' }]);

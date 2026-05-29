@@ -2,283 +2,480 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KIDA 可菱水｜管理後台</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KIDA 吉達興 ｜ 客戶管理後台</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+:root{--bg:#f0f4f8;--card:#fff;--navy:#003366;--blue:#1976D2;--green:#2E7D32;--orange:#E65100;--red:#C62828;--purple:#6A1B9A;--text:#1a1a2e;--muted:#607D8B;--border:#e0e8f0;--sh:0 2px 16px rgba(0,51,102,.08)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,'Noto Sans TC',sans-serif;background:#f0f4f7;color:#2d3e50;min-height:100vh}
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#003D57,#0078A0)}
-.login-box{background:#fff;border-radius:16px;padding:40px 36px;width:340px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
-.login-logo{text-align:center;margin-bottom:28px}
-.login-logo .logo-text{font-size:22px;font-weight:700;color:#0078A0}
-.login-logo .sub{font-size:12px;color:#888;margin-top:4px}
-.login-box input{width:100%;padding:12px 14px;border:1.5px solid #e0e8ee;border-radius:8px;font-size:15px;margin-bottom:14px;outline:none;transition:border-color .2s}
-.login-box input:focus{border-color:#0078A0}
-.login-box button{width:100%;padding:13px;background:#0078A0;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s}
-.login-box button:hover{background:#005f82}
-.login-box button:disabled{background:#8ab8c8;cursor:not-allowed}
-.login-error{color:#e74c3c;font-size:13px;text-align:center;margin-top:8px;display:none}
-.login-status{color:#0078A0;font-size:12px;text-align:center;margin-top:10px;min-height:18px}
-.spinner{display:inline-block;width:12px;height:12px;border:2px solid #0078A0;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;vertical-align:middle}
-@keyframes spin{to{transform:rotate(360deg)}}
-#main-screen{display:none}
-.topbar{background:#fff;border-bottom:1px solid #e8eef3;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
-.topbar-logo{font-size:17px;font-weight:700;color:#0078A0}
-.topbar-logo span{font-size:12px;font-weight:400;color:#999;margin-left:8px}
-.logout-btn{font-size:13px;color:#999;cursor:pointer;border:none;background:none;padding:6px 12px;border-radius:6px}
-.logout-btn:hover{background:#f5f5f5;color:#666}
-.tabs{background:#fff;border-bottom:1px solid #e8eef3;padding:0 24px;display:flex;gap:0}
-.tab-btn{padding:14px 20px;font-size:14px;color:#888;border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;transition:all .2s;font-weight:500}
-.tab-btn.active{color:#0078A0;border-bottom-color:#0078A0}
-.tab-btn:hover:not(.active){color:#555}
-.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:20px 24px}
-.stat-card{background:#fff;border-radius:12px;padding:16px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);border:1px solid #edf2f7}
-.stat-label{font-size:12px;color:#999;margin-bottom:6px}
-.stat-value{font-size:28px;font-weight:700;color:#2d3e50}
-.stat-card.urgent .stat-value{color:#e67e22}
-.stat-card.danger .stat-value{color:#e74c3c}
-.content{padding:0 24px 24px}
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;margin-top:4px}
-.section-title{font-size:15px;font-weight:600;color:#2d3e50}
-.refresh-btn{font-size:13px;color:#0078A0;border:1.5px solid #0078A0;background:none;border-radius:6px;padding:5px 14px;cursor:pointer;transition:all .2s}
-.refresh-btn:hover{background:#0078A0;color:#fff}
-.table-wrap{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.07);border:1px solid #edf2f7}
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-thead tr{background:#f8fafc}
-th{padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #edf2f7}
-td{padding:13px 16px;border-bottom:1px solid #f4f7fa;vertical-align:middle}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--navy);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-badge{background:var(--blue);color:#fff;font-weight:900;font-size:14px;padding:6px 12px;border-radius:6px;letter-spacing:1px}
+.logo-text{color:#fff;font-size:16px;font-weight:700}
+.logo-sub{color:rgba(255,255,255,.45);font-size:11px}
+.hdr-r{display:flex;align-items:center;gap:12px}
+.refresh-btn{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2);padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.refresh-btn:hover{background:rgba(255,255,255,.25)}
+.last-upd{color:rgba(255,255,255,.4);font-size:11px;font-family:'DM Mono',monospace}
+main{padding:28px 32px;max-width:1400px;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px}
+.sc{background:var(--card);border-radius:14px;padding:18px 20px;box-shadow:var(--sh);border-left:4px solid transparent;transition:transform .2s,box-shadow .2s}
+.sc:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,51,102,.14)}
+.sc.b{border-color:var(--blue)}.sc.r{border-color:var(--red)}.sc.g{border-color:#43A047}.sc.o{border-color:var(--orange)}.sc.p{border-color:var(--purple)}.sc.tl{border-color:#00ACC1}
+.sl{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.sv{font-size:32px;font-weight:900;line-height:1}
+.sc.b .sv{color:var(--blue)}.sc.r .sv{color:var(--red)}.sc.g .sv{color:#43A047}.sc.o .sv{color:var(--orange)}.sc.p .sv{color:var(--purple)}.sc.tl .sv{color:#00ACC1}
+.ss{font-size:11px;color:var(--muted);margin-top:4px}
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:#fff;padding:6px;border-radius:12px;box-shadow:var(--sh);width:fit-content}
+.tab-btn{padding:10px 24px;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted);background:transparent;transition:all .2s}
+.tab-btn.active{background:var(--navy);color:#fff}
+.tc{background:var(--card);border-radius:16px;box-shadow:var(--sh);overflow:hidden}
+.th{padding:18px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px}
+.tt{font-size:16px;font-weight:700;color:var(--navy)}
+.tct{font-size:12px;color:var(--muted);margin-top:2px}
+.fi{padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;width:220px;transition:border-color .2s}
+.fi:focus{border-color:var(--blue)}
+table{width:100%;border-collapse:collapse}
+th{background:#f8fafc;padding:11px 20px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:12px 20px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:#fafcff}
-.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
-.badge-ok{background:#e8f5e9;color:#2e7d32}
-.badge-warn{background:#fff3e0;color:#e65100}
-.badge-danger{background:#fce4ec;color:#c62828}
-.badge-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
-.progress-wrap{width:100px}
-.progress-track{height:6px;background:#eee;border-radius:3px;overflow:hidden;margin-top:4px}
-.progress-bar{height:100%;border-radius:3px;transition:width .3s}
-.push-btn{padding:6px 14px;font-size:12px;font-weight:600;border:none;border-radius:6px;cursor:pointer;transition:all .2s;background:#0078A0;color:#fff}
-.push-btn:hover{background:#005f82;transform:translateY(-1px)}
-.push-btn:active{transform:translateY(0)}
-.push-btn:disabled{background:#ccc;cursor:not-allowed;transform:none}
-.uid{font-family:monospace;font-size:12px;color:#666;background:#f5f5f5;padding:2px 6px;border-radius:4px}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.loading{text-align:center;padding:40px;color:#999;font-size:14px}
-.empty{text-align:center;padding:40px;color:#bbb;font-size:14px}
-#toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:#2d3e50;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,0.2);transform:translateY(80px);opacity:0;transition:all .3s}
-#toast.show{transform:translateY(0);opacity:1}
-#toast.success{background:#27ae60}
-#toast.error{background:#e74c3c}
-#push-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center}
-#push-modal.open{display:flex}
-.modal-box{background:#fff;border-radius:16px;padding:28px;width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
-.modal-title{font-size:17px;font-weight:700;margin-bottom:6px}
-.modal-sub{font-size:13px;color:#888;margin-bottom:20px}
-.modal-label{font-size:12px;font-weight:600;color:#666;margin-bottom:6px}
-.modal-box textarea{width:100%;border:1.5px solid #e0e8ee;border-radius:8px;padding:10px 12px;font-size:14px;resize:vertical;min-height:80px;outline:none;font-family:inherit}
-.modal-box textarea:focus{border-color:#0078A0}
-.modal-actions{display:flex;gap:10px;margin-top:16px}
-.modal-actions button{flex:1;padding:11px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none}
-.btn-cancel{background:#f0f4f7;color:#666}
-.btn-cancel:hover{background:#e8eef3}
-.btn-send{background:#0078A0;color:#fff}
-.btn-send:hover{background:#005f82}
-.modal-flex-note{background:#e8f4fb;border-radius:8px;padding:10px 12px;font-size:12px;color:#0078A0;margin-bottom:10px}
-@media(max-width:768px){.stats-bar{grid-template-columns:repeat(2,1fr)}.topbar,.tabs,.content{padding-left:16px;padding-right:16px}}
+tr:hover td{background:#f8fafc}
+.uid{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);background:var(--bg);padding:3px 8px;border-radius:4px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;cursor:help}
+.token{font-family:'DM Mono',monospace;font-size:12px;color:var(--purple);background:#F3E5F5;padding:4px 10px;border-radius:6px;font-weight:700;letter-spacing:.5px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
+.bg{background:#E8F5E9;color:var(--green)}.bo{background:#FFF3E0;color:var(--orange)}.br{background:#FFEBEE;color:var(--red)}.bb{background:#E3F2FD;color:var(--blue)}.bx{background:#ECEFF1;color:var(--muted)}.bp{background:#F3E5F5;color:var(--purple)}
+.bar{width:80px;height:5px;background:#e0e0e0;border-radius:3px;margin-top:5px;overflow:hidden}
+.fill{height:100%;border-radius:3px}
+.dt{font-family:'DM Mono',monospace;font-size:12px}
+.ds{color:var(--orange);font-weight:700}.do{color:var(--red);font-weight:700}
+.ld,.em{text-align:center;padding:60px 20px;color:var(--muted)}
+.sp{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ei{font-size:44px;margin-bottom:12px}
+.sec{display:none}.sec.active{display:block}
+.warn{display:none;background:#FFEBEE;border:1px solid #EF9A9A;border-radius:10px;padding:12px 20px;font-size:13px;color:var(--red);margin-bottom:16px;align-items:center;gap:10px}
+.warn.show{display:flex}
+.supabase-badge{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.15);padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.3px}
+.redeem-btn{background:var(--green);color:#fff;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.redeem-btn:hover{background:#1B5E20}
+.redeem-btn:disabled{background:var(--muted);cursor:default}
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filter-select{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:#fff;cursor:pointer}
+.filter-select:focus{border-color:var(--blue)}
+@media(max-width:768px){main{padding:16px}.stats{grid-template-columns:repeat(2,1fr)}}
+.cb-col{width:36px;text-align:center}
+.cb{width:16px;height:16px;cursor:pointer;accent-color:#E63239}
+.del-bar{display:none;align-items:center;gap:10px;margin-bottom:10px;padding:10px 14px;background:#fff3f3;border-radius:8px;border:1px solid #fcc}
+.del-bar.show{display:flex}
+.btn-del{padding:7px 18px;background:#E63239;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-del:hover{background:#c0392b}
+.btn-del-cancel{padding:7px 14px;background:white;color:#666;border:1px solid #ccc;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit}
+.badge-warn{background:#FFF3CD;color:#856404;border:1px solid #FFECB5;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700}
+.badge-expire{background:#F8D7DA;color:#842029;border:1px solid #F5C2C7;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700}
 </style>
 </head>
 <body>
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">
-      <div class="logo-text">💧 KIDA 可菱水</div>
-      <div class="sub">管理員後台</div>
+<header>
+  <div class="logo">
+    <div class="logo-badge">KIDA</div>
+    <div>
+      <div class="logo-text">吉達興居家生活 ｜ 客戶管理後台</div>
+      <div class="logo-sub">三菱可菱水 Cleansui · 資料庫：Supabase（永久儲存）</div>
     </div>
-    <input type="password" id="admin-key-input" placeholder="請輸入管理員金鑰" onkeydown="if(event.key==='Enter')doLogin()" />
-    <button id="login-btn" onclick="doLogin()">登入後台</button>
-    <div class="login-error" id="login-error">金鑰錯誤，請重新輸入</div>
-    <div class="login-status" id="login-status"></div>
   </div>
-</div>
-<div id="main-screen">
-  <div class="topbar">
-    <div class="topbar-logo">💧 KIDA 可菱水 <span>客戶管理後台</span></div>
-    <button class="logout-btn" onclick="doLogout()">登出</button>
+  <div class="hdr-r">
+    <div class="supabase-badge">🟢 Supabase</div>
+    <div class="last-upd" id="lu">--</div>
+    <button class="refresh-btn" onclick="loadAll()">⟳ 重新整理</button>
   </div>
+</header>
+
+<main>
+  <div class="stats">
+    <div class="sc b"><div class="sl">💧 濾心提醒總數</div><div class="sv" id="tr">–</div><div class="ss">已設定提醒客戶</div></div>
+    <div class="sc r"><div class="sl">🚨 14天內到期</div><div class="sv" id="se">–</div><div class="ss">需關注客戶</div></div>
+    <div class="sc g"><div class="sl">📋 保固登錄總數</div><div class="sv" id="tw">–</div><div class="ss">已登錄保固</div></div>
+    <div class="sc o"><div class="sl">⚠️ 保固30天到期</div><div class="sv" id="we">–</div><div class="ss">需提醒客戶</div></div>
+    <div class="sc p"><div class="sl">🎟 優惠券總數</div><div class="sv" id="tc2">–</div><div class="ss">登錄後立即發放·效期30天</div></div>
+    <div class="sc tl"><div class="sl">✅ 已核銷</div><div class="sv" id="tu">–</div><div class="ss">已使用優惠券</div></div>
+  </div>
+
+  <div class="warn" id="ws">🔴 &nbsp;<span id="wt"></span></div>
+
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('reminders',this)">🔔 濾心提醒客戶</button>
-    <button class="tab-btn" onclick="switchTab('registrations',this)">📋 保固登錄客戶</button>
+    <button class="tab-btn active" onclick="sw('reminders',this)">💧 濾心更換提醒</button>
+    <button class="tab-btn" onclick="sw('warranty',this)">📋 產品保固登錄</button>
+    <button class="tab-btn" onclick="sw('coupons',this)">🎟 優惠券管理</button>
   </div>
-  <div class="stats-bar">
-    <div class="stat-card"><div class="stat-label">提醒設定人數</div><div class="stat-value" id="stat-reminders">—</div></div>
-    <div class="stat-card"><div class="stat-label">保固登錄人數</div><div class="stat-value" id="stat-registrations">—</div></div>
-    <div class="stat-card urgent"><div class="stat-label">⚠️ 5天內到期</div><div class="stat-value" id="stat-urgent">—</div></div>
-    <div class="stat-card danger"><div class="stat-label">🚨 已逾期</div><div class="stat-value" id="stat-overdue">—</div></div>
-  </div>
-  <div class="content">
-    <div class="tab-content active" id="tab-reminders">
-      <div class="section-header">
-        <div class="section-title">濾心提醒設定客戶</div>
-        <button class="refresh-btn" onclick="loadReminders()">↻ 重新載入</button>
+
+  <!-- 濾心提醒 -->
+  <div id="sec-reminders" class="sec active">
+    <div class="tc">
+      <div class="th">
+        <div><div class="tt">濾心更換提醒清單</div><div class="tct" id="rc"></div></div>
+        <input class="fi" type="text" placeholder="🔍 搜尋產品名稱..." oninput="ft('rb',this.value)">
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>客戶ID</th><th>產品</th><th>到期日</th><th>狀態</th><th>使用進度</th><th>登錄時間</th><th>操作</th></tr></thead>
-          <tbody id="reminders-tbody"><tr><td colspan="8" class="loading">載入中...</td></tr></tbody>
-        </table>
+      <div id="rl" class="ld"><div class="sp"></div>連線中...</div>
+      <div class="del-bar" id="del-bar-r">
+        <span id="del-count-r" style="font-size:13px;color:#666"></span>
+        <button class="btn-del" onclick="deleteSelected('r')">🗑️ 刪除所選</button>
+        <button class="btn-del-cancel" onclick="clearSelection('r')">取消</button>
       </div>
-    </div>
-    <div class="tab-content" id="tab-registrations">
-      <div class="section-header">
-        <div class="section-title">產品保固登錄客戶</div>
-        <button class="refresh-btn" onclick="loadRegistrations()">↻ 重新載入</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>客戶ID</th><th>產品</th><th>型號</th><th>購買日</th><th>通路</th><th>保固到期</th><th>保固狀態</th><th>操作</th></tr></thead>
-          <tbody id="registrations-tbody"><tr><td colspan="9" class="loading">載入中...</td></tr></tbody>
-        </table>
-      </div>
+      <table id="rt" style="display:none">
+        <thead><tr>
+  <th class="cb-col"><input type="checkbox" class="cb" id="cb-r-all" onchange="toggleAll('r',this.checked)"></th>
+  <th>#</th><th>LINE User ID</th><th>姓名</th><th>產品類型</th><th>下次更換日</th><th>距今狀態</th><th>通知</th><th>設定時間</th>
+</tr></thead>
+        <tbody id="rb"></tbody>
+      </table>
+      <div id="re" class="em" style="display:none"><div class="ei">💧</div><div>尚無客戶設定濾心提醒<br><small style="color:#aaa">客戶在 LINE 設定後會顯示在這裡</small></div></div>
     </div>
   </div>
-</div>
-<div id="push-modal">
-  <div class="modal-box">
-    <div class="modal-title">📨 手動推播訊息</div>
-    <div class="modal-sub" id="modal-uid-display"></div>
-    <div class="modal-flex-note">💡 留空則自動發送含「購買濾心」按鈕的 Flex 推播卡片</div>
-    <div class="modal-label">自訂訊息（選填）</div>
-    <textarea id="push-message" placeholder="例：您好，您的濾心即將到期，歡迎前往購買！&#10;&#10;官網：www.kida.tw&#10;客服電話：02-2756-5899"></textarea>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closePushModal()">取消</button>
-      <button class="btn-send" onclick="doSendPush()">發送推播</button>
+
+  <!-- 保固登錄 -->
+  <div id="sec-warranty" class="sec">
+    <div class="tc">
+      <div class="th">
+        <div><div class="tt">產品保固登錄清單</div><div class="tct" id="wc"></div></div>
+        <input class="fi" type="text" placeholder="🔍 搜尋產品或地點..." oninput="ft('wb',this.value)">
+      </div>
+      <div id="wl" class="ld"><div class="sp"></div>連線中...</div>
+      <table id="wt2" style="display:none">
+        <thead><tr><th>#</th><th>LINE User ID</th><th>姓名</th><th>產品名稱</th><th>型號</th><th>購買日期</th><th>購買地點</th><th>保固到期日</th><th>狀態</th></tr></thead>
+        <tbody id="wb"></tbody>
+      </table>
+      <div id="we2" class="em" style="display:none"><div class="ei">📋</div><div>尚無客戶登錄產品保固<br><small style="color:#aaa">客戶在 LINE 登錄後會顯示在這裡</small></div></div>
     </div>
   </div>
-</div>
-<div id="toast"></div>
+
+  <!-- 優惠券管理 -->
+  <div id="sec-coupons" class="sec">
+    <div class="tc">
+      <div class="th">
+        <div><div class="tt">優惠券管理清單</div><div class="tct" style="font-size:12px;color:#607D8B;margin-top:2px">📌 客戶登錄產品後立即發放，有效期限 30 天</div>
+          <button class="btn-s" style="background:#F57C00;color:white;padding:6px 14px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" onclick="triggerCouponReminders()">🎟️ 手動發送到期提醒</button><div class="tct" id="cc"></div></div>
+        <div class="filter-bar">
+          <select class="filter-select" id="coupon-filter" onchange="filterCoupons()">
+            <option value="all">全部狀態</option>
+            <option value="issued">✅ 未使用</option>
+            <option value="used">🔵 已核銷</option>
+            <option value="expired">⬜ 已過期</option>
+          </select>
+          <input class="fi" type="text" placeholder="🔍 搜尋券號 / 姓名 / 型號..." oninput="ft('cpb',this.value)">
+        </div>
+      </div>
+      <div id="cpl" class="ld"><div class="sp"></div>連線中...</div>
+      <div class="del-bar" id="del-bar-cp">
+        <span id="del-count-cp" style="font-size:13px;color:#666"></span>
+        <button class="btn-del" onclick="deleteSelected('cp')">🗑️ 刪除所選</button>
+        <button class="btn-del-cancel" onclick="clearSelection('cp')">取消</button>
+      </div>
+      <table id="cpt" style="display:none">
+        <thead><tr>
+  <th class="cb-col"><input type="checkbox" class="cb" id="cb-cp-all" onchange="toggleAll('cp',this.checked)"></th>
+  <th>#</th><th>姓名</th><th>型號</th><th>券號</th><th>折扣</th><th>有效期限</th><th>狀態</th><th>核銷門市</th><th>發送時間</th><th>操作</th>
+</tr></thead>
+        <tbody id="cpb"></tbody>
+      </table>
+      <div id="cpe" class="em" style="display:none"><div class="ei">🎟</div><div>尚無優惠券記錄<br><small style="color:#aaa">客戶登錄產品後立即發放，效期 30 天</small></div></div>
+    </div>
+  </div>
+</main>
+
 <script>
-const BACKEND_URL="https://line-reminder-backend.onrender.com";
-let ADMIN_KEY="",currentPushUserId="",currentPushProductName="";
-
-function setStatus(msg,isError){
-  const s=document.getElementById("login-status");
-  s.innerHTML=msg?'<span class="spinner"></span>'+msg:'';
-  const e=document.getElementById("login-error");
-  if(isError){e.style.display="block";e.textContent=msg;s.innerHTML="";}
-  else e.style.display="none";
+// 將 UTC 時間轉換為台灣時間（UTC+8）
+function toTW(utcStr) {
+  if (!utcStr) return '—';
+  const d = new Date(utcStr);
+  const tw = new Date(d.getTime() + 8 * 60 * 60 * 1000);
+  return tw.toISOString().substring(0, 16).replace('T', ' ');
 }
 
-function fetchWithTimeout(url,options,timeout=70000){
-  return Promise.race([
-    fetch(url,options),
-    new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),timeout))
-  ]);
+const API = 'https://line-reminder-backend.onrender.com';
+const KEY = 'kida-admin-2024';
+let allCoupons = [];
+
+function dd(d){const t=new Date,g=new Date(d);t.setHours(0,0,0,0);g.setHours(0,0,0,0);return Math.round((g-t)/86400000)}
+function sid(u){return u?u.substring(0,8)+'…'+u.substring(u.length-4):'—'}
+
+function daysBadge(d){
+  if(d<0)return`<span class="badge br">逾期${Math.abs(d)}天</span>`;
+  if(d===0)return`<span class="badge br">⚡今天到期</span>`;
+  if(d<=3)return`<span class="badge br">剩${d}天</span>`;
+  if(d<=14)return`<span class="badge bo">剩${d}天</span>`;
+  if(d<=30)return`<span class="badge bb">剩${d}天</span>`;
+  return`<span class="badge bg">剩${d}天</span>`;
+}
+function warBadge(d){
+  if(d<0)return`<span class="badge bx">已過期</span>`;
+  if(d<=7)return`<span class="badge br">剩${d}天</span>`;
+  if(d<=30)return`<span class="badge bo">剩${d}天</span>`;
+  return`<span class="badge bg">保固中</span>`;
+}
+function couponBadge(s){
+  if(s==='used')return`<span class="badge bb">✅ 已核銷</span>`;
+  if(s==='expired')return`<span class="badge bx">⬜ 已過期</span>`;
+  return`<span class="badge bg">🟢 未使用（效期30天）</span>`;
+}
+function expireBadge(expireDate){
+  if(!expireDate)return'';
+  const d=Math.round((new Date(expireDate)-new Date())/86400000);
+  if(d<0)return'';
+  if(d===0)return' <span class="badge-expire">⚠️ 今天到期</span>';
+  if(d<=3)return` <span class="badge-expire">⚠️ ${d}天後到期</span>`;
+  if(d<=7)return` <span class="badge-warn">🔔 ${d}天後到期</span>`;
+  return'';
+}
+function dc(d){return d<0?'do':d<=14?'ds':''}
+function pb(d,tot){
+  const p=Math.max(0,Math.min(100,(1-d/tot)*100));
+  const c=p>85?'#E53935':p>70?'#FB8C00':'#43A047';
+  return`<div class="bar"><div class="fill" style="width:${p}%;background:${c}"></div></div>`;
+}
+function ft(id,kw){
+  document.getElementById(id).querySelectorAll('tr').forEach(r=>{
+    r.style.display=r.textContent.toLowerCase().includes(kw.toLowerCase())?'':'none';
+  });
+}
+function sw(n,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+n).classList.add('active');
+  btn.classList.add('active');
+}
+function setLoading(id){
+  document.getElementById(id+'l').style.display='block';
+  document.getElementById(id+'l').innerHTML='<div class="sp"></div>連線中...';
+  const tEl=document.getElementById(id+'t'+(id==='w'?'2':id==='cp'?'':'')); 
+  if(tEl)tEl.style.display='none';
+  const eEl=document.getElementById(id+'e'+(id==='w'?'2':id==='cp'?'':''));
+  if(eEl)eEl.style.display='none';
 }
 
-function doLogin(){
-  const key=document.getElementById("admin-key-input").value.trim();
-  if(!key)return;
-  ADMIN_KEY=key;
-  const btn=document.getElementById("login-btn");
-  btn.disabled=true;
-  btn.textContent="登入中...";
-  setStatus("正在連線伺服器，請稍候...");
+function filterCoupons(){
+  const filter = document.getElementById('coupon-filter').value;
+  const rows = document.getElementById('cpb').querySelectorAll('tr');
+  rows.forEach(r => {
+    const status = r.dataset.status || '';
+    r.style.display = (filter === 'all' || status === filter) ? '' : 'none';
+  });
+}
 
-  let sec=0;
-  const timer=setInterval(()=>{
-    sec++;
-    if(sec<10) setStatus("正在連線伺服器，請稍候...");
-    else if(sec<40) setStatus("伺服器喚醒中，約需 30~60 秒，請耐心等候 ⏳");
-    else setStatus("即將完成，請再等一下... ☕");
-  },1000);
-
-  fetchWithTimeout(BACKEND_URL+"/api/admin/stats",{headers:{"x-admin-key":ADMIN_KEY}},75000)
-    .then(r=>{
-      clearInterval(timer);
-      if(r.ok){
-        document.getElementById("login-screen").style.display="none";
-        document.getElementById("main-screen").style.display="block";
-        loadStats();loadReminders();
-      } else {
-        btn.disabled=false;btn.textContent="登入後台";
-        setStatus("",true);
-        document.getElementById("login-error").textContent="金鑰錯誤，請重新輸入";
-        document.getElementById("login-error").style.display="block";
-        ADMIN_KEY="";
-      }
-    })
-    .catch(e=>{
-      clearInterval(timer);
-      btn.disabled=false;btn.textContent="登入後台";
-      setStatus("",true);
-      document.getElementById("login-error").textContent="連線失敗，請再試一次（伺服器可能仍在啟動中）";
-      document.getElementById("login-error").style.display="block";
-      ADMIN_KEY="";
+async function redeemCoupon(token, btn) {
+  const store = prompt('請輸入核銷門市名稱：', '');
+  if (!store) return;
+  if (!confirm(`確認核銷券號 ${token}？\n門市：${store}`)) return;
+  btn.disabled = true;
+  btn.textContent = '核銷中...';
+  try {
+    const res = await fetch(`${API}/api/coupon/redeem`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, redeemedBy: store })
     });
+    const data = await res.json();
+    if (data.success) {
+      alert('✅ 核銷成功！客戶 LINE 已收到通知。');
+      loadCoupons();
+    } else {
+      alert('❌ 核銷失敗：' + data.message);
+      btn.disabled = false;
+      btn.textContent = '核銷';
+    }
+  } catch(e) {
+    alert('❌ 網路錯誤，請稍後再試');
+    btn.disabled = false;
+    btn.textContent = '核銷';
+  }
 }
 
-function doLogout(){ADMIN_KEY="";document.getElementById("login-screen").style.display="flex";document.getElementById("main-screen").style.display="none";document.getElementById("admin-key-input").value="";setStatus("");}
-function switchTab(tab,btn){
-  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  document.getElementById("tab-"+tab).classList.add("active");btn.classList.add("active");
-  if(tab==="reminders")loadReminders();if(tab==="registrations")loadRegistrations();
+async function loadReminders(){
+  try{
+    const res=await fetch(`${API}/api/admin/reminders?key=${KEY}`);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    document.getElementById('rl').style.display='none';
+    document.getElementById('tr').textContent=data.length;
+    const soon=data.filter(r=>r.daysLeft>=0&&r.daysLeft<=14).length;
+    const over=data.filter(r=>r.daysLeft<0).length;
+    document.getElementById('se').textContent=soon;
+    if(!data.length){document.getElementById('re').style.display='block';return}
+    data.sort((a,b)=>a.daysLeft-b.daysLeft);
+    document.getElementById('rb').innerHTML=data.map((r,i)=>`
+      <tr>
+        <td class="cb-col"><input type="checkbox" class="cb cb-r" data-id="${r.id}" onchange="updateDelBar('r')"></td>
+        <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">${i+1}</td>
+        <td><span class="uid" title="${r.userId}">${sid(r.userId)}</span></td>
+        <td>${r.userName||'—'}</td>
+        <td><b>${r.productName||'—'}</b></td>
+        <td><span class="dt ${dc(r.daysLeft)}">${r.nextDate}</span></td>
+        <td>${daysBadge(r.daysLeft)}${pb(r.daysLeft,r.productDays||90)}</td>
+        <td>${r.notified?'<span class="badge bx">已通知</span>':'<span class="badge bg">待提醒</span>'}</td>
+        <td style="color:var(--muted);font-size:11px;font-family:'DM Mono',monospace">${toTW(r.createdAt)}</td>
+      </tr>`).join('');
+    document.getElementById('rt').style.display='table';
+    document.getElementById('rc').textContent=`共 ${data.length} 筆`;
+    if(soon>0||over>0){
+      const p=[];
+      if(over)p.push(`${over}位已逾期`);
+      if(soon)p.push(`${soon}位14天內到期`);
+      document.getElementById('wt').textContent=p.join('、')+'，請留意！';
+      document.getElementById('ws').classList.add('show');
+    }
+  }catch(e){
+    document.getElementById('rl').innerHTML=`<div class="ei">⚠️</div><div style="color:var(--red)">載入失敗：${e.message}</div>`;
+    document.getElementById('tr').textContent='?';
+    document.getElementById('se').textContent='?';
+  }
 }
-function loadStats(){
-  fetch(BACKEND_URL+"/api/admin/stats",{headers:{"x-admin-key":ADMIN_KEY}}).then(r=>r.json()).then(d=>{
-    document.getElementById("stat-reminders").textContent=d.totalReminders??"—";
-    document.getElementById("stat-registrations").textContent=d.totalRegistrations??"—";
-    document.getElementById("stat-urgent").textContent=d.urgentCount??"—";
-    document.getElementById("stat-overdue").textContent=d.overdueCount??"—";
-  }).catch(()=>{});
+
+async function loadWarranty(){
+  try{
+    const res=await fetch(`${API}/api/admin/registrations?key=${KEY}`);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    document.getElementById('wl').style.display='none';
+    document.getElementById('tw').textContent=data.length;
+    const exp=data.filter(r=>r.warrantyDaysLeft>=0&&r.warrantyDaysLeft<=30).length;
+    document.getElementById('we').textContent=exp;
+    if(!data.length){document.getElementById('we2').style.display='block';return}
+    data.sort((a,b)=>a.warrantyDaysLeft-b.warrantyDaysLeft);
+    document.getElementById('wb').innerHTML=data.map((r,i)=>`
+      <tr>
+        <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">${i+1}</td>
+        <td><span class="uid" title="${r.userId}">${sid(r.userId)}</span></td>
+        <td>${r.userName||'—'}</td>
+        <td><b>${r.productName||'—'}</b></td>
+        <td style="font-family:'DM Mono',monospace;font-size:12px">${r.productCode||'—'}</td>
+        <td style="font-family:'DM Mono',monospace;font-size:12px">${r.purchaseDate||'—'}</td>
+        <td>${r.purchasePlace||'—'}</td>
+        <td><span class="dt ${dc(r.warrantyDaysLeft)}">${r.warrantyEnd||'—'}</span></td>
+        <td>${warBadge(r.warrantyDaysLeft)}</td>
+      </tr>`).join('');
+    document.getElementById('wt2').style.display='table';
+    document.getElementById('wc').textContent=`共 ${data.length} 筆`;
+  }catch(e){
+    document.getElementById('wl').innerHTML=`<div class="ei">⚠️</div><div style="color:var(--red)">載入失敗：${e.message}</div>`;
+    document.getElementById('tw').textContent='?';
+    document.getElementById('we').textContent='?';
+  }
 }
-function loadReminders(){
-  const tbody=document.getElementById("reminders-tbody");
-  tbody.innerHTML='<tr><td colspan="8" class="loading">載入中...</td></tr>';
-  fetch(BACKEND_URL+"/api/admin/reminders",{headers:{"x-admin-key":ADMIN_KEY}}).then(r=>r.json()).then(data=>{
-    if(!data.length){tbody.innerHTML='<tr><td colspan="8" class="empty">尚無資料</td></tr>';return;}
-    tbody.innerHTML=data.map((r,i)=>{
-      const d=r.daysLeft,pct=Math.min(100,Math.max(0,Math.round((r.productDays-Math.max(0,d))/r.productDays*100)));
-      const barColor=d<0?"#e74c3c":d<=5?"#e67e22":"#27ae60";
-      const badge=d<0?'<span class="badge badge-danger"><span class="badge-dot"></span>已逾期'+Math.abs(d)+'天</span>':d===0?'<span class="badge badge-danger"><span class="badge-dot"></span>今日到期</span>':d<=5?'<span class="badge badge-warn"><span class="badge-dot"></span>剩'+d+'天</span>':'<span class="badge badge-ok"><span class="badge-dot"></span>剩'+d+'天</span>';
-      const uid_short=r.userId.substring(0,6)+"..."+r.userId.substring(r.userId.length-4);
-      return '<tr><td>'+(i+1)+'</td><td><span class="uid" title="'+r.userId+'">'+uid_short+'</span></td><td><strong>'+(r.productName||"未填寫")+'</strong></td><td>'+r.nextDate+'</td><td>'+badge+'</td><td><div class="progress-wrap"><div style="font-size:11px;color:#999">'+pct+'%</div><div class="progress-track"><div class="progress-bar" style="width:'+pct+'%;background:'+barColor+'"></div></div></div></td><td style="font-size:12px;color:#999">'+(r.createdAt?r.createdAt.substring(0,10):"—")+'</td><td><button class="push-btn" onclick="openPushModal(''+r.userId+'',''+((r.productName||"可菱水濾心").replace(/'/g,"\'"))+'')">推播</button></td></tr>';
-    }).join("");loadStats();
-  }).catch(()=>{tbody.innerHTML='<tr><td colspan="8" class="empty">載入失敗，請按「重新載入」</td></tr>';});
+
+async function loadCoupons(){
+  document.getElementById('cpl').style.display='block';
+  document.getElementById('cpl').innerHTML='<div class="sp"></div>連線中...';
+  document.getElementById('cpt').style.display='none';
+  document.getElementById('cpe').style.display='none';
+  try{
+    const res=await fetch(`${API}/api/admin/registrations?key=${KEY}`);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    allCoupons = data;
+    document.getElementById('cpl').style.display='none';
+    document.getElementById('tc2').textContent=data.length;
+    const used=data.filter(r=>r.couponStatus==='used').length;
+    document.getElementById('tu').textContent=used;
+    if(!data.length){document.getElementById('cpe').style.display='block';return}
+    const today=new Date().toISOString().slice(0,10);
+    document.getElementById('cpb').innerHTML=data.map((r,i)=>{
+      const daysLeft = r.couponExpireDate ? Math.round((new Date(r.couponExpireDate)-new Date())/(86400000)) : 999;
+      const canRedeem = r.couponStatus==='issued' && r.couponExpireDate >= today;
+      return`<tr data-status="${r.couponStatus}">
+        <td class="cb-col"><input type="checkbox" class="cb cb-cp" data-id="${r.id}" onchange="updateDelBar('cp')"></td>
+        <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">${i+1}</td>
+        <td><b>${r.userName||'—'}</b></td>
+        <td style="font-family:'DM Mono',monospace;font-size:12px">${r.productCode||'—'}</td>
+        <td><span class="token">${r.couponToken}</span></td>
+        <td><b style="color:var(--purple)">${Math.round((r.couponDiscount||0.95)*100)}折</b></td>
+        <td><span class="dt ${daysLeft<0?'do':daysLeft<=7?'ds':''}">${r.couponExpireDate||'—'}</span></td>
+        <td>${couponBadge(r.couponStatus)}</td>
+        <td style="font-size:12px;color:var(--muted)">${r.redeemedBy||'—'}</td>
+        <td style="color:var(--muted);font-size:11px;font-family:'DM Mono',monospace">${toTW(r.couponSentAt)}</td>
+        <td>${canRedeem?`<button class="redeem-btn" onclick="redeemCoupon('${r.couponToken}',this)">核銷</button>`:'<span style="color:var(--muted);font-size:12px">—</span>'}</td>
+      </tr>`;}).join('');
+    document.getElementById('cpt').style.display='table';
+    document.getElementById('cc').textContent=`共 ${data.length} 筆`;
+  }catch(e){
+    document.getElementById('cpl').innerHTML=`<div class="ei">⚠️</div><div style="color:var(--red)">載入失敗：${e.message}</div>`;
+    document.getElementById('tc2').textContent='?';
+    document.getElementById('tu').textContent='?';
+  }
 }
-function loadRegistrations(){
-  const tbody=document.getElementById("registrations-tbody");
-  tbody.innerHTML='<tr><td colspan="9" class="loading">載入中...</td></tr>';
-  fetch(BACKEND_URL+"/api/admin/registrations",{headers:{"x-admin-key":ADMIN_KEY}}).then(r=>r.json()).then(data=>{
-    if(!data.length){tbody.innerHTML='<tr><td colspan="9" class="empty">尚無資料</td></tr>';return;}
-    tbody.innerHTML=data.map((r,i)=>{
-      const d=r.warrantyDaysLeft;
-      const badge=d<0?'<span class="badge badge-danger"><span class="badge-dot"></span>已過期</span>':d<=30?'<span class="badge badge-warn"><span class="badge-dot"></span>剩'+d+'天</span>':'<span class="badge badge-ok"><span class="badge-dot"></span>剩'+d+'天</span>';
-      const uid_short=r.userId.substring(0,6)+"..."+r.userId.substring(r.userId.length-4);
-      return '<tr><td>'+(i+1)+'</td><td><span class="uid" title="'+r.userId+'">'+uid_short+'</span></td><td><strong>'+r.productName+'</strong></td><td style="font-size:12px;color:#666">'+r.productCode+'</td><td>'+r.purchaseDate+'</td><td style="font-size:12px">'+r.purchasePlace+'</td><td>'+r.warrantyEnd+'</td><td>'+badge+'</td><td><button class="push-btn" onclick="openPushModal(''+r.userId+'',''+r.productName.replace(/'/g,"\'")+'')">推播</button></td></tr>';
-    }).join("");
-  }).catch(()=>{tbody.innerHTML='<tr><td colspan="9" class="empty">載入失敗，請按「重新載入」</td></tr>';});
+
+async function loadAll(){
+  document.getElementById('ws').classList.remove('show');
+  await Promise.all([loadReminders(), loadWarranty(), loadCoupons()]);
+  document.getElementById('lu').textContent='更新：'+new Date().toLocaleTimeString('zh-TW');
 }
-function openPushModal(userId,productName){
-  currentPushUserId=userId;currentPushProductName=productName;
-  document.getElementById("modal-uid-display").textContent="客戶："+userId.substring(0,6)+"..."+userId.substring(userId.length-4)+"｜產品："+productName;
-  document.getElementById("push-message").value="";
-  document.getElementById("push-modal").classList.add("open");
+
+loadAll();
+
+// ── 勾選刪除功能 ──
+function toggleAll(type, checked) {
+  document.querySelectorAll(`.cb-${type}`).forEach(cb => cb.checked = checked);
+  updateDelBar(type);
 }
-function closePushModal(){document.getElementById("push-modal").classList.remove("open");currentPushUserId="";currentPushProductName="";}
-function doSendPush(){
-  if(!currentPushUserId)return;
-  const msg=document.getElementById("push-message").value.trim();
-  const sendBtn=document.querySelector(".btn-send");sendBtn.disabled=true;sendBtn.textContent="發送中...";
-  const body={userId:currentPushUserId,productName:currentPushProductName};if(msg)body.message=msg;
-  fetch(BACKEND_URL+"/api/admin/push",{method:"POST",headers:{"Content-Type":"application/json","x-admin-key":ADMIN_KEY},body:JSON.stringify(body)}).then(r=>r.json()).then(d=>{
-    sendBtn.disabled=false;sendBtn.textContent="發送推播";closePushModal();
-    d.success?showToast("✅ 推播成功！","success"):showToast("❌ 推播失敗："+(d.error||"未知錯誤"),"error");
-  }).catch(()=>{sendBtn.disabled=false;sendBtn.textContent="發送推播";showToast("❌ 網路錯誤，請重試","error");});
+
+function updateDelBar(type) {
+  const selected = document.querySelectorAll(`.cb-${type}:checked`);
+  const bar = document.getElementById(`del-bar-${type}`);
+  const count = document.getElementById(`del-count-${type}`);
+  if (selected.length > 0) {
+    bar.classList.add('show');
+    count.textContent = `已選取 ${selected.length} 筆`;
+  } else {
+    bar.classList.remove('show');
+    document.getElementById(`cb-${type}-all`) && (document.getElementById(`cb-${type}-all`).checked = false);
+  }
 }
-function showToast(msg,type=""){const t=document.getElementById("toast");t.textContent=msg;t.className="show "+type;setTimeout(()=>{t.className=""},3000);}
-document.getElementById("push-modal").addEventListener("click",function(e){if(e.target===this)closePushModal();});
+
+function clearSelection(type) {
+  document.querySelectorAll(`.cb-${type}`).forEach(cb => cb.checked = false);
+  const allCb = document.getElementById(`cb-${type}-all`);
+  if (allCb) allCb.checked = false;
+  document.getElementById(`del-bar-${type}`).classList.remove('show');
+}
+
+async function deleteSelected(type) {
+  const selected = [...document.querySelectorAll(`.cb-${type}:checked`)];
+  if (selected.length === 0) return;
+  
+  const tableMap = {r: '濾心提醒', cp: '優惠券/保固記錄'};
+  if (!confirm(`確定刪除選取的 ${selected.length} 筆${tableMap[type] || ''}記錄？此動作無法復原！`)) return;
+  
+  const apiMap = {r: 'reminders', cp: 'registrations'};
+  const endpoint = apiMap[type];
+  
+  let success = 0, fail = 0;
+  for (const cb of selected) {
+    try {
+      const res = await fetch(`${API}/api/admin/${endpoint}/${cb.dataset.id}?key=${KEY}`, {method: 'DELETE'});
+      if (res.ok) success++;
+      else fail++;
+    } catch(e) { fail++; }
+  }
+  
+  alert(`刪除完成！成功 ${success} 筆${fail > 0 ? `，失敗 ${fail} 筆` : ''}`);
+  clearSelection(type);
+  
+  // 重新載入資料
+  if (type === 'r') loadReminders();
+  if (type === 'cp') loadCoupons();
+}
+
+async function triggerCouponReminders() {
+  if(!confirm('確定手動發送優惠券到期提醒（7天/3天/當天到期）？')) return;
+  try {
+    const r = await fetch(`${API}/api/trigger-coupon-reminders?key=${KEY}`);
+    const data = await r.json();
+    alert(`✅ 優惠券提醒發送完成！\n發送筆數：${data.sent || 0} 筆`);
+    loadCoupons();
+  } catch(e) {
+    alert('❌ 發送失敗：' + e.message);
+  }
+}
 </script>
 </body>
 </html>
